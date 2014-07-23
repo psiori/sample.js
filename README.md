@@ -31,6 +31,7 @@ Syntax of both files needs to be correct ;-)
 To put this project under grunt's management, we needed to a) install grunt and b) set it up locally in the project
 
 1. installation
+
     sudo port install npm
     sudo npm install -g grunt-cli
     sudo npm install -g grunt-contrib-jshint 
