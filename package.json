@@ -1,0 +1,27 @@
+{
+  "name": "sample.js",
+  "barename": "samplejs",
+  "version": "0.0.1",
+  "private": true,
+  "homepage": "http://www.5dlab.com",
+  "keywords": [
+    "sample.js",
+    "tracking",
+    "analytics",
+    "html"
+  ],
+  "devDependencies": {
+    "grunt": "^0.4.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wackadoo/analytics-sample.js.git"
+  },
+  "author": "Sascha Lange, João Alves",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "main": "lib/sample.js",
+  "scripts": {
+    "test": "grunt"
+  }
+}
