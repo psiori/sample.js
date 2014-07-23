@@ -32,13 +32,23 @@ module.exports = function(grunt) {
       options: {
         stripBanners: 'all',
         banner: '<%= meta.banner %>\n\n(function (window, undefined) {',
-        footer: '\n})(window);'
+        footer: '\nwindow.Sample = Sample;\n})(window);'
       },
 
       stable: {
         src: ['<%= build.browser %>'],
         dest: 'dist/sample-<%= pkg.version %>.js'
-      }
+      },
+      
+      tests: {
+        src: ['<%= build.browser %>', 'tests/**/*.js'],
+        dest: 'tmp/tests.js',
+        options: {
+          banner: '',
+          footer: ''
+        },          
+      },
+      
     },
     
     uglify: {
@@ -51,18 +61,53 @@ module.exports = function(grunt) {
         src: ['<%= concat.stable.dest %>'],
         dest: 'dist/sample-<%= pkg.version %>.min.js'
       }
+    },
+    
+    simplemocha: {
+        options: {
+            globals: ['expect'],
+            timeout: 3000,
+            ignoreLeaks: false,
+            ui: 'bdd',
+            reporter: 'tap'
+        },
+        all: { src: ['tmp/tests.js'] }
+    },
+    
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec'
+        },
+        src: ['tmp/tests.js']
+      }
     }
+    
+    
   });
+
+  this.registerTask('tests', 'concat:tests');
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-mocha-test');
   
-  grunt.registerTask('build', [
+  grunt.registerTask('test', 'mochaTest');
+  
+  grunt.registerTask('stable', [
     'concat:stable',
     'uglify:stable'
   ]);
+  
+  grunt.registerTask('build', [
+    'clean',
+    'jshint',
+    'tests',
+    'test',
+    'stable'
+  ]);
 
-  grunt.registerTask('default', 'jshint');	
+  grunt.registerTask('default', 'build');	
 };

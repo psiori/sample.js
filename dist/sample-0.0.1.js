@@ -100,5 +100,4 @@ var Sample = {
 };	
 
 window.Sample = Sample;
-
 })(window);

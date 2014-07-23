@@ -9,6 +9,7 @@ Building
 For building the library from source you'll need npm (node package manager) and grunt installed on your machine. On a Mac with installed MacPorts you'd use:
 ```Shell
 sudo port install npm
+sudo npm install -g mocha
 sudo npm install -g grunt-cli
 
 npm install grunt --save-dev
@@ -16,6 +17,8 @@ npm install grunt-contrib-clean --save-dev
 npm install grunt-contrib-jshint --save-dev
 npm install grunt-contrib-concat --save-dev
 npm install grunt-contrib-uglify --save-dev
+npm install grunt-mocha-test --save-dev
+npm install chai  --save-dev
 ```
   
 Remember to user the "-g" flag when installing grunt in order to install it globally for all users.
