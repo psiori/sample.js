@@ -17,6 +17,8 @@ sudo npm install -g grunt-contrib-jshint
 npm install grunt --save-dev
 npm install grunt-contrib-clean --save-dev
 npm install grunt-contrib-jshint --save-dev
+npm install grunt-contrib-concat --save-dev
+npm install grunt-contrib-uglify --save-dev
 ```
   
 Remember to user the "-g" flag when installing grunt in order to install it globally for all users.
