@@ -39,16 +39,29 @@ module.exports = function(grunt) {
         src: ['<%= build.browser %>'],
         dest: 'dist/sample-<%= pkg.version %>.js'
       }
+    },
+    
+    uglify: {
+      options: {
+        banner: '<%= meta.banner %>',
+        mangle: true
+      },
+      
+      stable: {
+        src: ['<%= concat.stable.dest %>'],
+        dest: 'dist/sample-<%= pkg.version %>.min.js'
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   
   grunt.registerTask('build', [
     'concat:stable',
-//  'uglify:stable'
+    'uglify:stable'
   ]);
 
   grunt.registerTask('default', 'jshint');	
