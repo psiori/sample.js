@@ -1,4 +1,15 @@
-var Sample = (function () {
+/*!
+ * Sample.js - Sends tracking events to 5d's analytics service. v0.0.1
+ * http://www.5dlab.com
+ *
+ * Copyright (c) 2014-2014, Sascha Lange, João Alves
+ * Licensed under the MIT License.
+ *
+ */
+
+
+
+(function (window, undefined) {
 
   var endpoint = "http://localhost:3000/sample/v01/event",
       appToken = null;
@@ -51,7 +62,7 @@ var Sample = (function () {
           self.sendNext();
         });
 
-        xhr.open("POST", Sample.getEndpoint());
+        xhr.open("POST", sample.getEndpoint());
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         xhr.setRequestHeader('Content-length', string.length);
         xhr.setRequestHeader('Connection', 'close');
@@ -62,7 +73,7 @@ var Sample = (function () {
 
   })();
 
-  return {
+var sample = {
     setEndpoint: function(newEndpoint) {
       endpoint = newEndpoint;
     },
@@ -81,5 +92,10 @@ var Sample = (function () {
 
       connector.add(params, function() { });
     }
-  };	
-})();
+};	
+
+window.sample = sample;
+
+
+
+})(window);

@@ -1,14 +1,14 @@
 <html>
   <head>
-    <script src="../../lib/sample.js"></script>
+    <script src="../../dist/sample-0.0.1.js"></script>
   </head>
 
   <body>
     <script>
       window.onload = function() {
-        Sample.setAppToken("MyUniqueAppToken");
+        sample.setAppToken("MyUniqueAppToken");
         
-        Sample.track("test_event", { event_category : "test",
+        sample.track("test_event", { event_category : "test",
                                      debug : true });
       };
     </script>

@@ -9,7 +9,15 @@ Building
 For building the library from source you'll need npm (node package manager) and grunt installed on your machine. On a Mac with installed MacPorts you'd use:
 ```Shell
 sudo port install npm
+
 sudo npm install -g grunt-cli
+sudo npm install -g grunt-cli
+sudo npm install -g grunt-contrib-jshint 
+
+npm install grunt --save-dev
+npm install grunt-contrib-clean --save-dev
+npm install grunt-contrib-jshint --save-dev
+
 ```
   
 Remember to user the "-g" flag when installing grunt in order to install it globally for all users.
@@ -21,6 +29,13 @@ grunt clean
     
 Inside the projects root folder. Should clean the project without any complaints.
 
+To build the present version, call
+```
+grunt build
+```
+
+The version and meta information is configured in package.json. The paths to the files to be included
+in the build are configured in build/build.yml.
 
 
 About Setting Up This Project

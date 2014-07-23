@@ -1,0 +1,80 @@
+###
+# 
+# The layout of this file is motivated by the
+# build configuration of the less project:
+# https://github.com/less/less.js
+#
+# NOTICE:
+# this file is specifically for controlling
+# paths for Sample.js source files, as well as
+# the order in which source files are
+# concatenated.
+#
+# Please do not add paths for anything else
+# to this file. All other paths for testing,
+# benchmarking and so on should be controlled
+# in the Gruntfile.
+###
+
+# Sample.js 
+lib: lib/sample
+
+# =================================
+# General
+# =================================
+prepend:
+#  browser: ['build/require.js', 'build/browser-header.js']
+#  rhino:   ['build/require-rhino.js', 'build/rhino-header.js', 'build/rhino-modules.js']
+
+append:
+#  amd:     build/amd.js
+#  browser: <%= build.lib %>/browser.js
+#  rhino:   <%= build.lib %>/rhino.js
+
+
+# =================================
+# Core sample files
+# =================================
+
+# <%= build.less.* %>
+sample:
+  xhr            : <%= build.lib %>/xhr.js
+  pixel          : <%= build.lib %>/pixel.js
+  core           : <%= build.lib %>/core.js
+
+
+# =================================
+# Browser build
+# =================================
+
+# <%= build.browser %>
+browser:
+
+  # prepend utils
+#  - <%= build.prepend.browser %>
+
+  # core
+  - <%= build.sample.xhr %>
+  - <%= build.sample.pixel %>
+  - <%= build.sample.core %>
+
+  # append browser-specific code
+#  - <%= build.append.browser %>
+#  - <%= build.append.amd %>
+
+
+# =================================
+# Rhino build
+# =================================
+
+# <%= build.rhino %>
+rhino:
+  # prepend utils
+#  - <%= build.prepend.rhino %>
+
+  # core
+  - <%= build.sample.xhr %>
+  - <%= build.sample.pixel %>
+  - <%= build.sample.core %>
+
+
