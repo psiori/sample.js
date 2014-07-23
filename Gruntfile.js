@@ -36,7 +36,7 @@ module.exports = function(grunt) {
       },
 
       stable: {
-        src: ['lib/**/*.js'],
+        src: ['<%= build.browser %>'],
         dest: 'dist/sample-<%= pkg.version %>.js'
       }
     }

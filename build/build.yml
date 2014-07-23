@@ -40,6 +40,7 @@ append:
 sample:
   xhr            : <%= build.lib %>/xhr.js
   pixel          : <%= build.lib %>/pixel.js
+  connector      : <%= build.lib %>/connector.js
   core           : <%= build.lib %>/core.js
 
 
@@ -56,6 +57,7 @@ browser:
   # core
   - <%= build.sample.xhr %>
   - <%= build.sample.pixel %>
+  - <%= build.sample.connector %>
   - <%= build.sample.core %>
 
   # append browser-specific code
@@ -75,6 +77,7 @@ rhino:
   # core
   - <%= build.sample.xhr %>
   - <%= build.sample.pixel %>
+  - <%= build.sample.connector %>
   - <%= build.sample.core %>
 
 
