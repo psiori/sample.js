@@ -50,7 +50,7 @@ To put this project under grunt's management, we needed to a) install grunt and 
  
 Afterwards, running grunt inside the project with
 ```Shell
-    grunt
+grunt
 ```
 just creates an error message with a warning about no "default" task being found.
   
