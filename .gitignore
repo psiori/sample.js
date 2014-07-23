@@ -1,0 +1,17 @@
+# OS and IDE
+.emacs*
+*.flymake
+*~
+.#*
+.idea
+*.sublime-*
+
+# npm
+node_modules
+npm-debug.log
+
+# project-specific
+tmp
+
+# grunt
+.grunt
