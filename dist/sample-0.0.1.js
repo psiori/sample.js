@@ -62,7 +62,7 @@
           self.sendNext();
         });
 
-        xhr.open("POST", sample.getEndpoint());
+        xhr.open("POST", Sample.getEndpoint());
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         xhr.setRequestHeader('Content-length', string.length);
         xhr.setRequestHeader('Connection', 'close');
@@ -73,7 +73,7 @@
 
   })();
 
-var sample = {
+var Sample = {
     setEndpoint: function(newEndpoint) {
       endpoint = newEndpoint;
     },
@@ -94,7 +94,7 @@ var sample = {
     }
 };	
 
-window.sample = sample;
+window.Sample = Sample;
 
 
 
