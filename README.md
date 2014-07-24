@@ -11,6 +11,8 @@ For building the library from source you'll need npm (node package manager) and 
 sudo port install npm
 sudo npm install -g mocha
 sudo npm install -g grunt-cli
+sudo npm install -g grunt-contrib-uglify
+sudo npm install -g grunt-mocha-test 
 
 npm install grunt --save-dev
 npm install grunt-contrib-clean --save-dev
@@ -21,7 +23,7 @@ npm install grunt-mocha-test --save-dev
 npm install chai  --save-dev
 ```
   
-Remember to user the "-g" flag when installing grunt in order to install it globally for all users.
+Remember to user the "-g" flag when installing grunt and other packages in order to install it globally for all users. Installing globally sometimes helps resolve dependency issues, e.g. for the uglify and mocha packages
 
 Check your installation by running 
 ```Shell

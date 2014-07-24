@@ -1,6 +1,6 @@
-require('chai').should();
-    
-describe('Connector', function() {
+define(function(require) {
+
+  describe('Connector', function() {
 
     describe('#length()', function () {
         it('should return zero on startup', function () {
@@ -13,8 +13,7 @@ describe('Connector', function() {
             connector.isEmpty().should.equal(true);
         });
     });
-  
-    /*
+
     describe('#add()', function () {
         it('should add an event to the queue', function () {
             connector.isEmpty().should.equal(true);
@@ -22,6 +21,7 @@ describe('Connector', function() {
             connector.isEmpty().should.equal(false);
             connector.length().should.equal(1);
         });
-    });*/
+    });
     
-})
+  });
+});

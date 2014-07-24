@@ -22,7 +22,8 @@ module.exports = function(grunt) {
       },
       files: [
         'Gruntfile.js',
-        'lib/**/*.js'
+        'lib/**/*.js',
+        'tests/**/*.js'
       ]
     },
 
@@ -40,15 +41,6 @@ module.exports = function(grunt) {
         dest: 'dist/sample-<%= pkg.version %>.js'
       },
       
-      tests: {
-        src: ['<%= build.browser %>', 'tests/**/*.js'],
-        dest: 'tmp/tests.js',
-        options: {
-          banner: '',
-          footer: ''
-        },          
-      },
-      
     },
     
     uglify: {
@@ -63,39 +55,42 @@ module.exports = function(grunt) {
       }
     },
     
-    simplemocha: {
+    mocha: {
+      test: {
+        src: ['tests/**/*.html'],
         options: {
-            globals: ['expect'],
-            timeout: 3000,
-            ignoreLeaks: false,
-            ui: 'bdd',
-            reporter: 'tap'
-        },
-        all: { src: ['tmp/tests.js'] }
+          run: false,
+          reporter: 'Spec'
+        }
+      },
     },
     
-    mochaTest: {
+    blanket_mocha: {
       test: {
-        options: {
-          reporter: 'spec'
-        },
-        src: ['tmp/tests.js']
+        src: ['tests/**/*.html'],
+        options : {
+          threshold : 20
+        }
       }
     }
-    
-    
   });
-
-  this.registerTask('tests', 'concat:tests');
+  
+  this.registerTask('browsertest-server', [
+    'shell:browsertest-server'
+  ]);
+  
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-blanket-mocha');
+  grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-shell');
   
-  grunt.registerTask('test', 'mochaTest');
-  
+  grunt.registerTask('test', 'mocha');
+  grunt.registerTask('test-coverage', 'blanket_mocha');
+    
   grunt.registerTask('stable', [
     'concat:stable',
     'uglify:stable'
@@ -104,8 +99,8 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'clean',
     'jshint',
-    'tests',
     'test',
+    'test-coverage',
     'stable'
   ]);
 
