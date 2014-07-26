@@ -24,7 +24,14 @@ module.exports = function(grunt) {
         'Gruntfile.js',
         'lib/**/*.js',
         'tests/**/*.js'
-      ]
+      ],
+      jenkins: {
+        options: {
+          reporter: 'checkstyle',
+          reporterOutput: 'tmp/checkstyle-result.xml'
+        },
+        src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+      }
     },
 
     clean: ['tmp', 'dist'],
@@ -63,6 +70,14 @@ module.exports = function(grunt) {
           reporter: 'Spec'
         }
       },
+      jenkins: {
+        src: ['tests/**/*.html'],
+        dest: 'tmp/test-result.xml',
+        options: {
+          run: false,
+          reporter: 'XUnit',
+        }
+      },
     },
     
     blanket_mocha: {
@@ -71,8 +86,9 @@ module.exports = function(grunt) {
         options : {
           threshold : 20
         }
-      }
+      },
     }
+    
   });
   
   this.registerTask('browsertest-server', [
@@ -100,6 +116,14 @@ module.exports = function(grunt) {
     'clean',
     'jshint',
     'test',
+    'test-coverage',
+    'stable'
+  ]);
+  
+  grunt.registerTask('jenkins', [
+    'clean',
+    'jshint:jenkins',
+    'mocha:jenkins',
     'test-coverage',
     'stable'
   ]);
