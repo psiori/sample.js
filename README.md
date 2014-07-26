@@ -40,7 +40,7 @@ To build the present version, call
 ```
 grunt build
 ```
- 
+  
 The version and meta information is configured in package.json. The paths to the files to be included
 in the build are configured in build/build.yml.
 
