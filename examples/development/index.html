@@ -4,7 +4,6 @@
     <script src="../../lib/sample/xhr.js"></script>
     <script src="../../lib/sample/connector.js"></script>
     <script src="../../lib/sample/core.js"></script>
-
   </head>
 
   <body>
@@ -14,9 +13,8 @@
         Sample.setModule('development')
         Sample.sessionStart();
         Sample.sessionUpdate();
-        Sample.ping();
+        Sample.autoPing(60);
       };
     </script>
-    
   </body>
 </html>

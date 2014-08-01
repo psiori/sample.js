@@ -103,7 +103,10 @@ var endpoint     = "http://events.neurometry.com/sample/v01/event",
     appToken     = null,
     sessionToken = null,
     module       = null,
-    debug        = false;
+    userId       = null,
+    email        = null,
+    debug        = false,
+    autoping     = null;
     
 var mergeParams = function(userParams, eventName)
 {
@@ -120,10 +123,18 @@ var mergeParams = function(userParams, eventName)
   add("app_token",      appToken);
   add("install_token",  installToken);
   add("session_token",  sessionToken);
-  add("event_category", userParams.event_category);
-  add("module",         userParams.module || module);
   add("debug",          debug);
   add("timestamp",      Math.round(new Date().getTime() /1000));
+  add("user_id",        userId);
+
+  add("event_category", userParams.event_category);
+  add("module",         userParams.module || module);
+  
+  if (eventName === "sessionStart" ||
+      eventName === "sessionUpdate")
+  {
+    add("email",        userParams.email || email);
+  }
   
   return params;
 };
@@ -175,6 +186,14 @@ var Sample = {
     module = newModule;
   },
   
+  setUserId: function(newUserId) {
+    userId = newUserId;
+  },
+  
+  setEmail: function(newEmail) {
+    email = newEmail;
+  },
+  
   setDebug: function(flag) {
     debug = flag;
   },
@@ -198,6 +217,20 @@ var Sample = {
   
   ping: function() {
     this.track('ping', { event_category: 'session' });
+  },
+  
+  /** starts or stops autopinging every seconds seconds.
+   * pass seconds = 0 to stop pinging. */
+  autoPing: function(seconds) {
+    if (typeof seconds === "undefined") {
+      seconds = 60;
+    }
+    clearTimeout(autoping);
+    if (seconds && seconds > 0) {
+      setTimeout(function() {
+        that.ping();
+      }, seconds * 1000);
+    }
   },
   
   isSafari: (function() {
