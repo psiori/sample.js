@@ -14,6 +14,14 @@
         Sample.sessionStart();
         Sample.sessionUpdate();
         Sample.autoPing(60);
+        
+        Sample.startGroup();
+        Sample.track('group_event1');
+        Sample.track('group_event2');
+        Sample.endGroup();
+        
+        Sample.contentUsage(1);
+        Sample.contentUsage([2, 3]);
       };
     </script>
   </body>

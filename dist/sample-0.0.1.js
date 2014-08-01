@@ -14,9 +14,17 @@
 
 
 
+var createGroup = function() {
+  return {
+    callback: function() {},
+    events: []
+  };
+};
+
 
 var connector = (function() {
-  var queue = [], sending = false, running = false, timer = null;
+  var queue = [], group = createGroup(),
+      sending = false, running = false, timer = null, grouping = false;
 
   var that = {
     start: function() {
@@ -24,7 +32,7 @@ var connector = (function() {
         return ;
       }
       running = true;
-      timer = setTimeout(function() {
+      timer = setInterval(function() {
         that.sendNext();
       }, 1000);
     },
@@ -52,13 +60,41 @@ var connector = (function() {
     isSending: function() {
       return sending === true;
     },
+    
+    startGroup: function() {
+      grouping = true;
+    },
+    
+    endGroup: function() {
+      var tmp = group;
+      grouping = false;
+
+      if (group.events.length === 0) {
+        return ;
+      }
+      
+      group = createGroup();
+      this.add(tmp.events, tmp.callback);
+    },
 
     add: function(event, callback) {
-      queue[queue.length] = {
-        event: event,
-        callback: callback,
-      };
-      this.sendNext();
+      if (grouping) {
+        if (callback) {
+          var gc = group.callback;
+          group.callback = function() {
+            callback.apply(this, arguments);
+            gc.apply(this, arguments);
+          };
+        }
+        group.events[group.events.length] = entry;
+      }
+      else {
+        queue[queue.length] = {
+          event: event,
+          callback: callback,
+        };
+        this.sendNext();
+      }
     },
 
     sendNext: function() {
@@ -105,6 +141,7 @@ var endpoint     = "http://events.neurometry.com/sample/v01/event",
     module       = null,
     userId       = null,
     email        = null,
+    platform     = null,
     debug        = false,
     autoping     = null;
     
@@ -134,6 +171,7 @@ var mergeParams = function(userParams, eventName)
       eventName === "sessionUpdate")
   {
     add("email",        userParams.email || email);
+    add("platform",     userParams.platform || platform);
   }
   
   return params;
@@ -155,6 +193,12 @@ var randomToken = function(length) {
 var Sample = {
   safariOnly: false,
   
+  PLATFORM_BROWSER:  'browser',
+  PLATFORM_IOS:      'ios',
+  PLATFORM_ANDROID:  'android',
+  PLATFORM_WINDOWS:  'windwos',
+  PLATFORM_FACEBOOK: 'facebook',
+  
   init: function(params) {
     if (localStorage.SampleToken) {
       installToken = localStorage.SampleToken;
@@ -168,6 +212,7 @@ var Sample = {
     else {
       sessionStorage.SampleToken = sessionToken = randomToken(32);
     }
+    platform = this.PLATFORM_BROWSER;
   },
   
   setEndpoint: function(newEndpoint) {
@@ -186,6 +231,10 @@ var Sample = {
     module = newModule;
   },
   
+  setPlatform: function(newPlatform) {
+    platform = newPlatform;
+  },
+  
   setUserId: function(newUserId) {
     userId = newUserId;
   },
@@ -196,6 +245,14 @@ var Sample = {
   
   setDebug: function(flag) {
     debug = flag;
+  },
+  
+  startGroup: function() {
+    connector.startGroup();
+  },
+  
+  endGroup: function() {
+    connector.endGroup();
   },
 
   track: function(eventName, params) {
@@ -222,15 +279,31 @@ var Sample = {
   /** starts or stops autopinging every seconds seconds.
    * pass seconds = 0 to stop pinging. */
   autoPing: function(seconds) {
+    var that = this;
     if (typeof seconds === "undefined") {
       seconds = 60;
     }
     clearTimeout(autoping);
     if (seconds && seconds > 0) {
-      setTimeout(function() {
+      autoping = setInterval(function() {
         that.ping();
       }, seconds * 1000);
     }
+  },
+  
+  contentUsage: function(content_ids, content_type) {
+    content_type = content_type || 'content';
+    var args = { 
+      content_type: content_type,
+      event_category: 'content'
+    };
+    if (Array.isArray(content_ids)) {
+      args.content_ids = content_ids;
+    }
+    else {
+      args.content_id = content_ids;      
+    }
+    this.track('usage', args);
   },
   
   isSafari: (function() {
