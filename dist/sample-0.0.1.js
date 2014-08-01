@@ -86,7 +86,7 @@ var connector = (function() {
             gc.apply(this, arguments);
           };
         }
-        group.events[group.events.length] = entry;
+        group.events[group.events.length] = event;
       }
       else {
         queue[queue.length] = {
@@ -166,10 +166,11 @@ var mergeParams = function(userParams, eventName)
 
   add("event_category", userParams.event_category);
   add("module",         userParams.module || module);
+  add("content_id",     userParams.content_id);
+  add("content_ids",    userParams.content_ids);
   
   if (eventName === "sessionStart" ||
-      eventName === "sessionUpdate")
-  {
+      eventName === "sessionUpdate") {
     add("email",        userParams.email || email);
     add("platform",     userParams.platform || platform);
   }
