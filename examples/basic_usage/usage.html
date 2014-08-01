@@ -6,6 +6,8 @@
   <body>
     <script>
       window.onload = function() {
+        Sample.safariOnly = true;
+        
         Sample.setAppToken("MyUniqueAppToken");
         
         Sample.track("test_event", { event_category : "test",

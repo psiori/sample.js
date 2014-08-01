@@ -16,9 +16,31 @@
 
 
 var connector = (function() {
-  var queue = [], sending = false;
+  var queue = [], sending = false, running = false, timer = null;
 
-  return {
+  var that = {
+    start: function() {
+      if (running) {
+        return ;
+      }
+      running = true;
+      timer = setTimeout(function() {
+        that.sendNext();
+      }, 1000);
+    },
+    
+    stop: function() {
+      if (!running) {
+        return ;
+      }
+      running = false;
+      clearTimeout(timer);
+    },
+    
+    isRunning: function() {
+      return running === true;
+    },
+    
     length: function () {
       return queue.length;
     },
@@ -40,7 +62,7 @@ var connector = (function() {
     },
 
     sendNext: function() {
-      if (sending || this.isEmpty()) {
+      if (!running || sending || this.isEmpty()) {
         return ;
       }
 
@@ -58,9 +80,7 @@ var connector = (function() {
       }, true);
 
       xhr.addEventListener("error", function() {
-
         sending = false;
-        self.sendNext();
       });
 
       xhr.open("POST", Sample.getEndpoint());
@@ -71,32 +91,65 @@ var connector = (function() {
       xhr.send(string);
     },
   };
+  
+  that.start();
+  
+  return that;
 
 })();
 
 
-var endpoint = "http://localhost:3000/sample/v01/event",
+var endpoint = "http://events.neurometry.com/sample/v01/event",
     appToken = null;
 
 var Sample = {
-    setEndpoint: function(newEndpoint) {
-      endpoint = newEndpoint;
-    },
+  safariOnly: false,
+  
+  setEndpoint: function(newEndpoint) {
+    endpoint = newEndpoint;
+  },
 
-    getEndpoint: function() {
-      return endpoint;
-    },
+  getEndpoint: function() {
+    return endpoint;
+  },
 
-    setAppToken: function(newAppToken) {
-      appToken = newAppToken;
-    },
+  setAppToken: function(newAppToken) {
+    appToken = newAppToken;
+  },
 
-    track: function(eventName, params) {
-      params.event_name = eventName;
-      params.app_token = appToken;
-
-      connector.add(params, function() { });
+  track: function(eventName, params) {
+    if (this.safariOnly === true && !this.isSafari()) {
+      return ;
     }
+    
+    params.event_name = eventName;
+    params.app_token = appToken;
+
+    connector.add(params, function() { });
+  },
+  
+  isSafari: (function() {
+    var memo = null;
+    
+    return function() {
+      if (memo === null) {
+        var ua = navigator.userAgent.toLowerCase(); 
+        
+        if (ua.indexOf('safari') != -1) { 
+          if (ua.indexOf('chrome') > -1) {
+            memo = false;
+          } 
+          else {
+            memo = true;
+          }
+        }
+        else {
+          memo = false;
+        }
+      }
+      return memo;
+    };
+  })()
 };	
 
 window.Sample = Sample;
