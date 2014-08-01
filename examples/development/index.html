@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <script src="../../lib/sample/pixel.js"></script>
+    <script src="../../lib/sample/xhr.js"></script>
+    <script src="../../lib/sample/connector.js"></script>
+    <script src="../../lib/sample/core.js"></script>
+
+  </head>
+
+  <body>
+    <script>
+      window.onload = function() {
+        Sample.setAppToken("MyUniqueAppToken");
+        Sample.sessionStart();
+        Sample.sessionUpdate();
+        Sample.ping();
+      };
+    </script>
+    
+  </body>
+</html>

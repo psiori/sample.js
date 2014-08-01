@@ -104,7 +104,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-shell');
   
-  grunt.registerTask('test', 'mocha');
+  grunt.registerTask('test', 'mocha:test');
   grunt.registerTask('test-coverage', 'blanket_mocha');
     
   grunt.registerTask('stable', [

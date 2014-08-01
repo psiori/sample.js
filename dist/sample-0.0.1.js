@@ -97,13 +97,56 @@ var connector = (function() {
   return that;
 
 })();
+var endpoint     = "http://events.neurometry.com/sample/v01/event",
+    installToken = null,
+    appToken     = null,
+    sessionToken = null,
+    module       = null;
+    
+var mergeParams = function(params, eventName)
+{
+  params.event_name = eventName;
+  params.app_token = appToken;
+  params.install_token = installToken;
+  params.session_token = sessionToken;
+  
+  if (module) {
+    params.module = params.module || module;
+  }
+  
+  return params;
+};
 
-
-var endpoint = "http://events.neurometry.com/sample/v01/event",
-    appToken = null;
+var randomToken = function(length) {
+  var str = "";
+  
+  for (var i=0; i < length; ++i) {
+    if (i > 0 && i % 4 === 0) {
+      str += "-";
+    }
+    str += Math.floor(16*Math.random()).toString(16).toUpperCase();
+  }
+  
+  return str;
+};
 
 var Sample = {
   safariOnly: false,
+  
+  init: function(params) {
+    if (localStorage.SampleToken) {
+      installToken = localStorage.SampleToken;
+    }
+    else {
+      localStorage.SampleToken = installToken = randomToken(24);
+    }
+    if (sessionStorage.SampleToken) {
+      sessionToken = sessionStorage.SampleToken;
+    }
+    else {
+      sessionStorage.SampleToken = sessionToken = randomToken(32);
+    }
+  },
   
   setEndpoint: function(newEndpoint) {
     endpoint = newEndpoint;
@@ -116,16 +159,30 @@ var Sample = {
   setAppToken: function(newAppToken) {
     appToken = newAppToken;
   },
+  
+  setModule: function(newModule) {
+    module = module;
+  },
 
   track: function(eventName, params) {
     if (this.safariOnly === true && !this.isSafari()) {
       return ;
     }
-    
-    params.event_name = eventName;
-    params.app_token = appToken;
-
+    params = mergeParams(params || {});
     connector.add(params, function() { });
+  },
+  
+  sessionStart: function(newAppTocken) {
+    appToken = newAppToken || appToken;
+    this.track('session_start', { category: 'session' });
+  },
+  
+  sessionUpdate: function() {
+    this.track('session_update', { category: 'session' });
+  },
+  
+  ping: function() {
+    this.track('ping', { category: 'session' });
   },
   
   isSafari: (function() {
@@ -150,7 +207,12 @@ var Sample = {
       return memo;
     };
   })()
-};	
+};
+
+Sample.init();	
+
+
+
 
 window.Sample = Sample;
 })(window);
