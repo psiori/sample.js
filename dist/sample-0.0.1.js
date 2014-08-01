@@ -97,22 +97,33 @@ var connector = (function() {
   return that;
 
 })();
+
 var endpoint     = "http://events.neurometry.com/sample/v01/event",
     installToken = null,
     appToken     = null,
     sessionToken = null,
-    module       = null;
+    module       = null,
+    debug        = false;
     
-var mergeParams = function(params, eventName)
+var mergeParams = function(userParams, eventName)
 {
-  params.event_name = eventName;
-  params.app_token = appToken;
-  params.install_token = installToken;
-  params.session_token = sessionToken;
+  var params = {};
   
-  if (module) {
-    params.module = params.module || module;
-  }
+  var add = function(key, value) {
+    // we'll add "0" but ignore value that equals null
+    if (key && typeof value !== "undefined" && (typeof value === "number" || value)) {
+      params[key] = value;
+    }
+  };
+  
+  add("event_name",     eventName);
+  add("app_token",      appToken);
+  add("install_token",  installToken);
+  add("session_token",  sessionToken);
+  add("event_category", userParams.event_category);
+  add("module",         userParams.module || module);
+  add("debug",          debug);
+  add("timestamp",      Math.round(new Date().getTime() /1000));
   
   return params;
 };
@@ -161,28 +172,32 @@ var Sample = {
   },
   
   setModule: function(newModule) {
-    module = module;
+    module = newModule;
+  },
+  
+  setDebug: function(flag) {
+    debug = flag;
   },
 
   track: function(eventName, params) {
     if (this.safariOnly === true && !this.isSafari()) {
       return ;
     }
-    params = mergeParams(params || {});
+    params = mergeParams(params || {}, eventName);
     connector.add(params, function() { });
   },
   
-  sessionStart: function(newAppTocken) {
+  sessionStart: function(newAppToken) {
     appToken = newAppToken || appToken;
-    this.track('session_start', { category: 'session' });
+    this.track('session_start', { event_category: 'session' });
   },
   
   sessionUpdate: function() {
-    this.track('session_update', { category: 'session' });
+    this.track('session_update', { event_category: 'session' });
   },
   
   ping: function() {
-    this.track('ping', { category: 'session' });
+    this.track('ping', { event_category: 'session' });
   },
   
   isSafari: (function() {
