@@ -11,8 +11,53 @@
 
 (function (window, undefined) {
 
+var XHRPost = (function() 
+{
+  var that = {
+    
+    send: function(url, data, onSuccess, onFailure) 
+    {
+      var string = JSON.stringify(data);
+      var self = this;
+
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("load", function() 
+      {
+         if (onSuccess) {
+           onSuccess();
+         }
+      }, true);
+
+      xhr.addEventListener("error", function() 
+      {
+        if (onFailure) {
+          onFailure();
+        }
+      });
+
+      xhr.open("POST", url);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.setRequestHeader('Content-length', string.length);
+      xhr.setRequestHeader('Connection', 'close');
+
+      xhr.send(string);
+    },
+  };
+  
+  return that;
+  
+})();
 
 
+
+var Pixel = (function() {
+  
+  var that = {
+    
+  };
+  
+  return that;
+})();
 
 var createGroup = function() {
   return {
@@ -110,25 +155,20 @@ var connector = (function() {
       var data = queue[0];
       var string = JSON.stringify({ p: data.event });
       var self = this;
-
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("load", function() {
+      
+      var url = Sample.getEndpoint();
+      var payload = { p: data.event };
+      var success = function() {
         queue.shift();
-
+        
         sending = false;
         self.sendNext();
-      }, true);
-
-      xhr.addEventListener("error", function() {
+      };
+      var error = function() {
         sending = false;
-      });
-
-      xhr.open("POST", Sample.getEndpoint());
-      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.setRequestHeader('Content-length', string.length);
-      xhr.setRequestHeader('Connection', 'close');
-
-      xhr.send(string);
+      };
+      
+      XHRPost.send(url, payload, success, error);
     },
   };
   
