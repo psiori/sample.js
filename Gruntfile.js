@@ -84,7 +84,8 @@ module.exports = function(grunt) {
       test: {
         src: ['tests/**/*.html'],
         options : {
-          threshold : 20
+          threshold : 50,
+          globalThreshold : 90
         }
       },
     }
