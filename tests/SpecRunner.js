@@ -5,7 +5,8 @@ require([
   '../lib/sample/xhr.js',
   '../lib/sample/pixel.js',
   'core.tests.js',
-  'connector.tests.js'  
+  'connector.tests.js',
+  'pixel.tests.js'    
 ], function(require) {
   mocha.checkLeaks();
   mocha.run();
