@@ -19,18 +19,59 @@ module.exports = function(grunt) {
 
     jshint: {
       options: {
+        es3: true,
+        curly: true,
+        eqeqeq: true,
+        forin: true,
+        freeze: true,
+        indent: 2,
+        latedef: "nofunc",
+        noempty: true,
+        nonbsp: true,
+        maxdepth: 3,
+        maxlen: 120
       },
-      files: [
+      use_defaults: [
         'Gruntfile.js',
-        'lib/**/*.js',
-        'tests/**/*.js'
+        'lib/**/*.js'
       ],
+      with_overrides: {
+        options: {
+          expr: true     // allow expressions to pass           
+        },
+        files: {
+          src: [ 'tests/**/*.js' ]
+        }
+      },
+      
       jenkins: {
         options: {
+          es3: true,
+          curly: true,
+          eqeqeq: true,
+          forin: true,
+          freeze: true,
+          indent: 2,
+          latedef: "nofunc",
+          noempty: true,
+          nonbsp: true,
+          maxdepth: 3,
+          maxlen: 120,
           reporter: 'checkstyle',
           reporterOutput: 'tmp/checkstyle-result.xml'
         },
-        src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+        use_defaults: [
+          'Gruntfile.js',
+          'lib/**/*.js'
+        ],
+        with_overrides: {
+          options: {
+            expr: true     // allow expressions to pass           
+          },
+          files: {
+            src: [ 'tests/**/*.js' ]
+          }
+        }
       }
     },
 
@@ -46,7 +87,7 @@ module.exports = function(grunt) {
       stable: {
         src: ['<%= build.browser %>'],
         dest: 'dist/sample-<%= pkg.version %>.js'
-      },
+      }
       
     },
     
@@ -75,9 +116,9 @@ module.exports = function(grunt) {
         dest: 'tmp/test-result.xml',
         options: {
           run: false,
-          reporter: 'XUnit',
+          reporter: 'XUnit'
         }
-      },
+      }
     },
     
     blanket_mocha: {
@@ -85,9 +126,9 @@ module.exports = function(grunt) {
         src: ['tests/**/*.html'],
         options : {
           threshold : 50,
-          globalThreshold : 90,
+          globalThreshold : 90
         }
-      },
+      }
     }
     
   });

@@ -41,7 +41,7 @@ var XHRPost = (function()
       xhr.setRequestHeader('Connection', 'close');
 
       xhr.send(string);
-    },
+    }
   };
   
   return that;
@@ -242,7 +242,7 @@ var connector = (function() {
       else {
         queue[queue.length] = {
           event: event,
-          callback: callback,
+          callback: callback
         };
         this.sendNext();
       }
@@ -276,7 +276,7 @@ var connector = (function() {
       else {
         Pixel.send(url, payload, success, error);
       }
-    },
+    }
   };
   
   that.start();
@@ -513,7 +513,7 @@ var Sample =
       {
         var ua = navigator.userAgent.toLowerCase(); 
         
-        if (ua.indexOf('safari') != -1) 
+        if (ua.indexOf('safari') !== -1) 
         { 
           if (ua.indexOf('chrome') > -1) 
           {

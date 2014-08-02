@@ -6,10 +6,10 @@ define(function(require)
     {
       it('should return true for arrays', function () 
       {
-        isArray([]).should.equal(true);
-        isArray([1]).should.equal(true);
-        isArray([1,2]).should.equal(true);
-        isArray(new Array(1,2)).should.equal(true);
+        isArray([]).should.ok;
+        isArray([1]).should.ok;
+        isArray([1,2]).should.ok;
+        isArray(new Array(1,2)).ok;
       });
       
       it('should return false for other datatypes', function () 

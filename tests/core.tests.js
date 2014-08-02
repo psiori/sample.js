@@ -300,7 +300,7 @@ define(function(require)
           
           should.not.exist(params.content_id);
           
-          params.should.have.property("content_ids").with.length(2);
+          params.should.have.property("content_ids").of.length(2);
           
           params.content_ids[0].should.equal(88);
           params.content_ids[1].should.equal(99);
@@ -318,7 +318,7 @@ define(function(require)
       it('should detect safari and not chrome', function () 
       {
         var ua = navigator.userAgent.toLowerCase(); 
-        var target = ua.indexOf('safari') != -1 && ua.indexOf('chrome') === -1;
+        var target = ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
         Sample.isSafari().should.equal(target);
       });
     });
