@@ -76,6 +76,10 @@ var connector = (function() {
       group = createGroup();
       this.add(tmp.events, tmp.callback);
     },
+    
+    isGroup: function() {
+      return grouping;
+    },
 
     add: function(event, callback) {
       if (grouping) {
@@ -152,7 +156,8 @@ var mergeParams = function(userParams, eventName)
   var add = function(key, value) 
   {
     // we'll add "0" but ignore value that equals null
-    if (key && typeof value !== "undefined" && (typeof value === "number" || value)) {
+    if (key && typeof value !== "undefined" && (typeof value === "number" || value)) 
+    {
       params[key] = value;
     }
   };
@@ -169,6 +174,7 @@ var mergeParams = function(userParams, eventName)
   add("module",         userParams.module || module);
   add("content_id",     userParams.content_id);
   add("content_ids",    userParams.content_ids);
+  add("content_type",   userParams.content_type);
   
   if (eventName === "sessionStart" ||
       eventName === "sessionUpdate") 
@@ -203,26 +209,26 @@ var Sample =
   PLATFORM_BROWSER:  'browser',
   PLATFORM_IOS:      'ios',
   PLATFORM_ANDROID:  'android',
-  PLATFORM_WINDOWS:  'windwos',
+  PLATFORM_WINDOWS:  'windows',
   PLATFORM_FACEBOOK: 'facebook',
   
   init: function(params) 
   {
-    if (localStorage.SampleToken) 
+    if (localStorage.getItem('SampleToken')) 
     {
-      installToken = localStorage.SampleToken;
+      installToken = localStorage.getItem('SampleToken');
     }
     else 
     {
-      localStorage.SampleToken = installToken = randomToken(24);
+      localStorage.setItem('SampleToken', (installToken = randomToken(24)));
     }
-    if (sessionStorage.SampleToken) 
+    if (sessionStorage.getItem('SampleToken')) 
     {
-      sessionToken = sessionStorage.SampleToken;
+      sessionToken = sessionStorage.getItem('SampleToken');
     }
     else 
     {
-      sessionStorage.SampleToken = sessionToken = randomToken(32);
+      sessionStorage.setItem('SampleToken', (sessionToken = randomToken(32)));
     }
     platform = this.PLATFORM_BROWSER;
   },
@@ -323,10 +329,10 @@ var Sample =
       seconds = 60;
     }
     clearTimeout(autoping);
+    autoping = null;
     if (seconds && seconds > 0) 
     {
-      autoping = setInterval(function() 
-      {
+      autoping = setInterval(function() {
         that.ping();
       }, seconds * 1000);
     }
