@@ -196,6 +196,15 @@ var connector = (function() {
       return running === true;
     },
     
+    setRequestMethod: function(method)
+    {
+      this.useXHR = method === "xhr";
+      if (!this.useXHR)
+      {
+        Pixel.useIFrame = method === "iframe";
+      }
+    },
+    
     length: function () {
       return queue.length;
     },
@@ -285,7 +294,7 @@ var connector = (function() {
 
 })();
 
-var endpoint     = "http://events.neurometry.com/sample/v01/event",
+var endpoint     = (location.protocol || "https:") + "//events.neurometry.com/sample/v01/event",
     installToken = null,
     appToken     = null,
     sessionToken = null,
@@ -293,8 +302,8 @@ var endpoint     = "http://events.neurometry.com/sample/v01/event",
     userId       = null,
     email        = null,
     platform     = null,
-    debug        = false,
     autoping     = null;
+    debug        = false;
     
 var mergeParams = function(userParams, eventName)
 {
@@ -351,8 +360,6 @@ var randomToken = function(length)
 
 var Sample = 
 {
-  safariOnly: false,
-  
   PLATFORM_BROWSER:  'browser',
   PLATFORM_IOS:      'ios',
   PLATFORM_ANDROID:  'android',
@@ -378,6 +385,7 @@ var Sample =
       sessionStorage.setItem('SampleToken', (sessionToken = randomToken(32)));
     }
     platform = this.PLATFORM_BROWSER;
+    connector.setRequestMethod(this.isWebkit() ? "xhr" : "iframe");
   },
   
   stop: function() 
@@ -442,10 +450,6 @@ var Sample =
 
   track: function(eventName, params) 
   {
-    if (this.safariOnly === true && !this.isSafari()) 
-    {
-      return ;
-    }
     params = mergeParams(params || {}, eventName);
     connector.add(params, function() { });
   },
@@ -503,7 +507,7 @@ var Sample =
     this.track('usage', args);
   },
   
-  isSafari: (function() 
+  isWebkit: (function() 
   {
     var memo = null;
     
@@ -512,22 +516,7 @@ var Sample =
       if (memo === null) 
       {
         var ua = navigator.userAgent.toLowerCase(); 
-        
-        if (ua.indexOf('safari') !== -1) 
-        { 
-          if (ua.indexOf('chrome') > -1) 
-          {
-            memo = false;
-          } 
-          else 
-          {
-            memo = true;
-          }
-        }
-        else 
-        {
-          memo = false;
-        }
+        memo = ua.indexOf('safari') !== -1 || (ua.indexOf('chrome') !== -1); 
       }
       return memo;
     };

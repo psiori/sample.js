@@ -313,13 +313,13 @@ define(function(require)
       });      
     });
     
-    describe('#isSafari', function () 
+    describe('#isWebkit', function () 
     {
-      it('should detect safari and not chrome', function () 
+      it('should detect safari and chrome', function () 
       {
         var ua = navigator.userAgent.toLowerCase(); 
-        var target = ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
-        Sample.isSafari().should.equal(target);
+        var target = ua.indexOf('safari') !== -1 || ua.indexOf('chrome') !== -1;
+        Sample.isWebkit().should.equal(target);
       });
     });
   });
