@@ -293,8 +293,17 @@ var connector = (function() {
   return that;
 
 })();
+var chooseProtocol = function()
+{
+  var protocol = (location.protocol || "https:");
+  if (protocol !== "http:" && protocol !=="https:")
+  {
+    protocol = "https:";
+  }
+  return protocol;
+};
 
-var endpoint     = (location.protocol || "https:") + "//events.neurometry.com/sample/v01/event",
+var endpoint     = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sample/v01/event",
     installToken = null,
     appToken     = null,
     sessionToken = null,
@@ -408,6 +417,15 @@ var Sample =
     return endpoint;
   },
 
+  /** sets the method being used to communicate with the event server.
+    * request methods to choose from: xhr (recommended), img (legacy,
+    * works across different origins), iframe (legacy with same origin) 
+    */
+  setRequestMethod: function(method) 
+  {
+    connector.setRequestMethod(method);
+  },
+
   setAppToken: function(newAppToken) 
   {
     appToken = newAppToken;
@@ -516,7 +534,7 @@ var Sample =
       if (memo === null) 
       {
         var ua = navigator.userAgent.toLowerCase(); 
-        memo = ua.indexOf('safari') !== -1 || (ua.indexOf('chrome') !== -1); 
+        memo = ua.indexOf('safari') !== -1 || ua.indexOf('chrome') !== -1; 
       }
       return memo;
     };

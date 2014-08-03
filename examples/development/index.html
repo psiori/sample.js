@@ -36,18 +36,19 @@
         Sample.contentUsage(1);
         Sample.contentUsage([2, 3]);
         
+        setTimeout(function() {
+          Sample.setRequestMethod('img');
+          Sample.sessionUpdate();
+          Sample.ping();
         
-        connector.useXHR = false;
-        Sample.sessionUpdate();
-        Sample.ping();
+          Sample.startGroup();
+          Sample.track('group_event3');
+          Sample.track('group_event4');
+          Sample.endGroup();
         
-        Sample.startGroup();
-        Sample.track('group_event3');
-        Sample.track('group_event4');
-        Sample.endGroup();
-        
-        Sample.contentUsage(4);
-        Sample.contentUsage([5, 6]);
+          Sample.contentUsage(4);
+          Sample.contentUsage([5, 6]);
+        }, 5000);
         
       };
     </script>
