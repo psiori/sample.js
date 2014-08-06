@@ -550,7 +550,7 @@ var Sample =
       if (memo === null) 
       {
         var ua = navigator.userAgent.toLowerCase(); 
-        memo = ua.indexOf('Internet Explorer') !== -1; 
+        memo = (ua.indexOf('MSIE') !== -1 || ua.indexOf('Trident/') > 0);
       }
       return memo;
     };
