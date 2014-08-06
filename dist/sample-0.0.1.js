@@ -549,7 +549,7 @@ var Sample =
     {
       if (memo === null) 
       {
-        var ua = navigator.userAgent.toLowerCase(); 
+        var ua = navigator.userAgent; 
         memo = (ua.indexOf('MSIE') !== -1 || ua.indexOf('Trident/') > 0);
       }
       return memo;
