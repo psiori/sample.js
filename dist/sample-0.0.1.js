@@ -466,6 +466,9 @@ var Sample =
 
   track: function(eventName, params) 
   {
+    if (this.isIE()) {
+      return ;
+    }
     params = mergeParams(params || {}, eventName);
     connector.add(params, function() { });
   },
@@ -533,6 +536,21 @@ var Sample =
       {
         var ua = navigator.userAgent.toLowerCase(); 
         memo = ua.indexOf('safari') !== -1 || ua.indexOf('chrome') !== -1; 
+      }
+      return memo;
+    };
+  })(),
+  
+  isIE: (function() 
+  {
+    var memo = null;
+    
+    return function() 
+    {
+      if (memo === null) 
+      {
+        var ua = navigator.userAgent.toLowerCase(); 
+        memo = ua.indexOf('Internet Explorer') !== -1; 
       }
       return memo;
     };
