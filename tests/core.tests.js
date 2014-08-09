@@ -172,7 +172,7 @@ define(function(require)
           params.content_id.should.equal(99);
           haveBeenCalled = true;
         }, function() {
-          Sample.track('trackEvent', { content_id: 99});
+          Sample.track('trackEvent', 'test', { content_id: 99});
           haveBeenCalled.should.equal(true);
         });
       });
