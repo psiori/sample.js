@@ -354,7 +354,8 @@ var mergeParams = function(userParams, eventName, eventCategory)
 
   
   if (eventName === "sessionStart" ||
-      eventName === "sessionUpdate") 
+      eventName === "sessionUpdate" ||
+      (eventCategory && eventCategory === "account")) 
   {
     add("email",        userParams.email || email);
     add("platform",     userParams.platform || platform);
@@ -466,6 +467,11 @@ var Sample =
     userId = newUserId;
   },
   
+  setFacebookId: function(newFacebookId)
+  {
+    facebookId = newFacebookId;
+  },
+  
   setEmail: function(newEmail) 
   {
     email = newEmail;
@@ -494,16 +500,52 @@ var Sample =
     debug = flag;
   },
   
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   EVENT GROUPING
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  /** start an event group. All tracking events created between startGroup()
+    * and endGroup() will be grouped together and send in one single HTTP
+    * packet right after the closing call to endGroup(). */
   startGroup: function() 
   {
     connector.startGroup();
   },
   
+  /** closes an event group and sends all grouped events in one HTTP packet
+    * to the server. */
   endGroup: function() 
   {
     connector.endGroup();
   },
-
+  
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   GENERIC TRACKING EVENT
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  /** generic tracking event that could be used to send pre-defined tracking
+    * events as well as user-defined, custom events. Just pass the eventName,
+    * the eventCategory (used for grouping in reports of the backend) and
+    * an optional hash of parameters. 
+    *
+    * Please note that only known parameters will be passed to the server.
+    * If you want to come up with your own parameters in you custom events,
+    * use the six pre-defined fields "parameter1" to "parameter6" for this
+    * purpose. 
+    *
+    * Examples:
+    * Sample.track('session_start', 'session'); // send the session start event
+    * Sample.track('found_item', 'custom', {    // send custom item event
+    *   parameter1: 'Black Stab',               // custom item name
+    *   parameter2: '21',                       g// level of item
+    * });
+    **/
   track: function(eventName, eventCategory, params) 
   {
     if (this.isIE()) {
@@ -513,6 +555,14 @@ var Sample =
     connector.add(params, function() { });
   },
   
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   SESSION EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  /** should be send on the start of a new session. */
   sessionStart: function(newAppToken) 
   {
     appToken = newAppToken || appToken;
@@ -558,10 +608,31 @@ var Sample =
     }
   },
   
-  registration: function(userId, params)
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   ACCOUNT EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  registration: function(newUserId, params)
   {
+    userId = newUserId || userId;
     this.track('registration', 'account', params);
   },
+  
+  signIn: function(newUserId, params)
+  {
+    userId = newUserId || userId;
+    this.track('sign_in', 'account', params);
+  },
+  
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   CONTENT EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
   
   contentUsage: function(content_ids, content_type) 
   {
@@ -580,6 +651,26 @@ var Sample =
     this.track('usage', 'content', args);
   },
   
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   PROGRESSION EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   PAYMENT EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   VIRTUAL CURRENCY EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
   
   
   
