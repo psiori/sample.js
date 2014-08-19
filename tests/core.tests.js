@@ -100,7 +100,16 @@ define(function(require)
         Sample.setEmail("email");
         email.should.equal('email');
       });
-    });              
+    });   
+    
+    describe('#setPlatform', function () 
+    {
+      it('should change internal platform value', function () 
+      {
+        Sample.setPlatform(Sample.PLATFORM_IOS);
+        platform.should.equal(Sample.PLATFORM_IOS);
+      });
+    });           
     
     describe('#setDebug', function () 
     {
@@ -368,18 +377,14 @@ define(function(require)
       it('should add some values only to sessionStart and Update', function () 
       {
         var params = { email: "test@test.com" };
-        Sample.setPlatform(Sample.PLATFORM_IOS);
         
-        should.not.exist(mergeParams(params, "event").platform);
         should.not.exist(mergeParams(params, "event").email);
 
-        should.exist(mergeParams(params, "sessionStart").platform);
         should.exist(mergeParams(params, "sessionStart").email);
 
-        should.exist(mergeParams(params, "sessionUpdate").platform);
         should.exist(mergeParams(params, "sessionUpdate").email);
         
-        mergeParams(params, "sessionUpdate").platform.should.equal(Sample.PLATFORM_IOS);     
+        mergeParams(params, "sessionUpdate").email.should.equal(params.email);     
       });  
       
       it('should add necessary values', function () 

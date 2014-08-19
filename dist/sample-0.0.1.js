@@ -302,6 +302,8 @@ var chooseProtocol = function()
 };
 
 var endpoint      = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sample/v01/event",
+    sdk           = "Sample.JS",
+    sdk_version   = "0.0.1",
     installToken  = null,
     appToken      = null,
     sessionToken  = null,
@@ -309,6 +311,8 @@ var endpoint      = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sa
     userId        = null,
     email         = null,
     platform      = null,
+    client        = null,
+    client_version= null,
     longitude     = null,
     latitude      = null,
     add_referer   = null,
@@ -330,6 +334,13 @@ var mergeParams = function(userParams, eventName, eventCategory)
       params[key] = value;
     }
   };
+
+  add("sdk",            sdk);
+  add("sdk_event",      sdk_version);
+  
+  add("platform",       userParams.platform       || platform);
+  add("client",         userParams.client         || client);
+  add("client_version", userParams.client_version || client_version);
   
   add("event_name",     eventName);
   add("app_token",      appToken);
@@ -358,7 +369,6 @@ var mergeParams = function(userParams, eventName, eventCategory)
       (eventCategory && eventCategory === "account")) 
   {
     add("email",        userParams.email || email);
-    add("platform",     userParams.platform || platform);
     add("locale",       userParams.locale || locale);
     
     add("add_referer",    userParams.referer   || add_referer);
@@ -462,6 +472,16 @@ var Sample =
     platform = newPlatform;
   },
   
+  setClient: function(clientId) 
+  {
+    client = clientId;
+  },
+  
+  setClientVersion: function(newClientVersion) 
+  {
+    client_version = newClientVersion;
+  },
+  
   setUserId: function(newUserId) 
   {
     userId = newUserId;
@@ -543,9 +563,9 @@ var Sample =
     * Sample.track('session_start', 'session'); // send the session start event
     * Sample.track('found_item', 'custom', {    // send custom item event
     *   parameter1: 'Black Stab',               // custom item name
-    *   parameter2: '21',                       g// level of item
+    *   parameter2: '21',                       // level of item
     * });
-    **/
+    */
   track: function(eventName, eventCategory, params) 
   {
     if (this.isIE()) {
@@ -590,7 +610,7 @@ var Sample =
   },
   
   /** starts or stops autopinging every seconds seconds.
-   * pass seconds = 0 to stop pinging. */
+    * pass seconds = 0 to stop pinging. */
   autoPing: function(seconds) 
   {
     var that = this;
