@@ -331,6 +331,26 @@ define(function(require)
         Sample.isWebkit().should.equal(target);
       });
     });
+    
+    describe('#setReferer', function () 
+    {
+      it('should set referer, campaign and placement', function () 
+      {
+        Sample.setReferer('ref', 'camp', 'placement');
+        ad_referer.should.equal('ref');
+        ad_campaign.should.equal('camp');
+        ad_placement.should.equal('placement');
+      });
+      
+      it('should merge referer, campaign and placement for session_start', function () 
+      {
+        Sample.setReferer('ref1', 'camp1', 'place1');
+        var params = mergeParams({}, "session_start");
+        params.should.have.property('ad_referer').that.equals('ref1');
+      });
+    });
+    
+    
   });
   
   describe('Helpers', function() 
@@ -374,17 +394,17 @@ define(function(require)
         should.not.exist(result.content_ids);
       });
       
-      it('should add some values only to sessionStart and Update', function () 
+      it('should add some values only to session_start and Update', function () 
       {
         var params = { email: "test@test.com" };
         
         should.not.exist(mergeParams(params, "event").email);
 
-        should.exist(mergeParams(params, "sessionStart").email);
+        should.exist(mergeParams(params, "session_start").email);
 
-        should.exist(mergeParams(params, "sessionUpdate").email);
+        should.exist(mergeParams(params, "session_update").email);
         
-        mergeParams(params, "sessionUpdate").email.should.equal(params.email);     
+        mergeParams(params, "session_update").email.should.equal(params.email);     
       });  
       
       it('should add necessary values', function () 
