@@ -321,6 +321,64 @@ define(function(require)
         });
       });      
     });
+           
+    describe('#purchase', function ()
+    {
+      it('should send purchase event to connector', function ()
+      {
+        var haveBeenCalled = false;
+        
+        injectTrack(function(params, callback) {
+          params.event_name.should.equal('purchase');
+          params.event_category.should.equal('revenue');
+          
+          params.provider.should.equal("provider");
+          params.gross.should.equal(80);
+          params.currency.should.equal("EUR");
+          params.country.should.equal("DE");
+          params.earnings.should.equal(1);
+          params.product_category.should.equal("category");
+          params.receipt_identifier.should.equal("identifier");
+         
+          haveBeenCalled = true;
+        }, function () {
+          Sample.purchase(99, {provider: "provider", gross: 80,
+                          currency:"EUR", country:"DE",
+                          earnings:1, product_category:"category",
+                          receipt_identifier: "identifier"});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
+    
+    describe('#chargeback', function ()
+    {
+      it('should send chargeback event to connector', function ()
+      {
+        var haveBeenCalled = false;
+        
+        injectTrack(function(params, callback) {
+          params.event_name.should.equal('chargeback');
+          params.event_category.should.equal('revenue');
+          
+          params.provider.should.equal("provider");
+          params.gross.should.equal(80);
+          params.currency.should.equal("EUR");
+          params.country.should.equal("DE");
+          params.earnings.should.equal(1);
+          params.product_category.should.equal("category");
+          params.receipt_identifier.should.equal("identifier");
+          
+          haveBeenCalled = true;
+        }, function () {
+          Sample.chargeback(99, {provider: "provider", gross: 80,
+                            currency:"EUR", country:"DE",
+                            earnings:1, product_category:"category",
+                            receipt_identifier: "identifier"});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
     
     describe('#isWebkit', function () 
     {
