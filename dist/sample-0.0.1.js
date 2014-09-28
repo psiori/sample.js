@@ -313,7 +313,7 @@ var chooseProtocol = function()
   return protocol;
 };
 
-var endpoint       = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sample/v01/event",
+var endpoint       = chooseProtocol() + "//events.neurometry.com/sample/v01/event",
     sdk            = "Sample.JS",
     sdk_version    = "0.0.1",
     installToken   = null,
