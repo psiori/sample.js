@@ -614,9 +614,6 @@ var Sample =
     */
   track: function(eventName, eventCategory, params) 
   {
-    if (this.isIE()) {
-      return ;
-    }
     params = mergeParams(params || {}, eventName, eventCategory);
     connector.add(params, function() { });
   },
