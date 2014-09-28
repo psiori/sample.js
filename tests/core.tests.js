@@ -321,6 +321,64 @@ define(function(require)
         });
       });      
     });
+           
+    describe('#purchase', function ()
+    {
+      it('should send purchase event to connector', function ()
+      {
+        var haveBeenCalled = false;
+        
+        injectTrack(function(params, callback) {
+          params.event_name.should.equal('purchase');
+          params.event_category.should.equal('revenue');
+          
+          params.provider.should.equal("provider");
+          params.gross.should.equal(80);
+          params.currency.should.equal("EUR");
+          params.country.should.equal("DE");
+          params.earnings.should.equal(1);
+          params.product_category.should.equal("category");
+          params.receipt_identifier.should.equal("identifier");
+         
+          haveBeenCalled = true;
+        }, function () {
+          Sample.purchase(99, {provider: "provider", gross: 80,
+                          currency:"EUR", country:"DE",
+                          earnings:1, product_category:"category",
+                          receipt_identifier: "identifier"});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
+    
+    describe('#chargeback', function ()
+    {
+      it('should send chargeback event to connector', function ()
+      {
+        var haveBeenCalled = false;
+        
+        injectTrack(function(params, callback) {
+          params.event_name.should.equal('chargeback');
+          params.event_category.should.equal('revenue');
+          
+          params.provider.should.equal("provider");
+          params.gross.should.equal(80);
+          params.currency.should.equal("EUR");
+          params.country.should.equal("DE");
+          params.earnings.should.equal(1);
+          params.product_category.should.equal("category");
+          params.receipt_identifier.should.equal("identifier");
+          
+          haveBeenCalled = true;
+        }, function () {
+          Sample.chargeback(99, {provider: "provider", gross: 80,
+                            currency:"EUR", country:"DE",
+                            earnings:1, product_category:"category",
+                            receipt_identifier: "identifier"});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
     
     describe('#isWebkit', function () 
     {
@@ -331,6 +389,26 @@ define(function(require)
         Sample.isWebkit().should.equal(target);
       });
     });
+    
+    describe('#setReferer', function () 
+    {
+      it('should set referer, campaign and placement', function () 
+      {
+        Sample.setReferer('ref', 'camp', 'placement');
+        ad_referer.should.equal('ref');
+        ad_campaign.should.equal('camp');
+        ad_placement.should.equal('placement');
+      });
+      
+      it('should merge referer, campaign and placement for session_start', function () 
+      {
+        Sample.setReferer('ref1', 'camp1', 'place1');
+        var params = mergeParams({}, "session_start");
+        params.should.have.property('ad_referer').that.equals('ref1');
+      });
+    });
+    
+    
   });
   
   describe('Helpers', function() 
@@ -374,17 +452,17 @@ define(function(require)
         should.not.exist(result.content_ids);
       });
       
-      it('should add some values only to sessionStart and Update', function () 
+      it('should add some values only to session_start and Update', function () 
       {
         var params = { email: "test@test.com" };
         
         should.not.exist(mergeParams(params, "event").email);
 
-        should.exist(mergeParams(params, "sessionStart").email);
+        should.exist(mergeParams(params, "session_start").email);
 
-        should.exist(mergeParams(params, "sessionUpdate").email);
+        should.exist(mergeParams(params, "session_update").email);
         
-        mergeParams(params, "sessionUpdate").email.should.equal(params.email);     
+        mergeParams(params, "session_update").email.should.equal(params.email);     
       });  
       
       it('should add necessary values', function () 

@@ -310,26 +310,28 @@ var chooseProtocol = function()
   return protocol;
 };
 
-var endpoint      = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sample/v01/event",
-    sdk           = "Sample.JS",
-    sdk_version   = "0.0.1",
-    installToken  = null,
-    appToken      = null,
-    sessionToken  = null,
-    module        = null,
-    userId        = null,
-    email         = null,
-    platform      = null,
-    client        = null,
-    client_version= null,
-    longitude     = null,
-    latitude      = null,
-    add_referer   = null,
-    add_campaign  = null,
-    add_placement = null,
-    locale        = null,
-    autoping      = null,
-    debug         = false;
+var endpoint       = "http:" + /*chooseProtocol() +*/ "//events.neurometry.com/sample/v01/event",
+    sdk            = "Sample.JS",
+    sdk_version    = "0.0.1",
+    installToken   = null,
+    appToken       = null,
+    sessionToken   = null,
+    module         = null,
+    userId         = null,
+    email          = null,
+    platform       = null,
+    client         = null,
+    client_version = null,
+    longitude      = null,
+    latitude       = null,
+    ad_referer     = null,
+    ad_campaign    = null,
+    ad_placement   = null,
+    locale         = null,
+    autoping       = null,
+    host           = null,
+    browserMode    = true,
+    debug          = false;
     
 var mergeParams = function(userParams, eventName, eventCategory)
 {
@@ -371,21 +373,44 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("parameter4",     userParams.parameter4);
   add("parameter5",     userParams.parameter5);
   add("parameter6",     userParams.parameter6);
+  
+  if (eventName === "purchase" ||
+      eventName === "chargeback")
+  {
+    add("provider",     userParams.provider);
+    add("gross",        userParams.gross);
+    add("currency",     userParams.currency);
+    add("country",      userParams.country);
+    add("earnings",     userParams.earnings);
+    add("product_sku",  userParams.product_sku);
+    add("product_category", userParams.product_category);
+    add("receipt_identifier", userParams.receipt_identifier);
+  }
 
   
-  if (eventName === "sessionStart" ||
-      eventName === "sessionUpdate" ||
+  if (eventName === "session_start" ||
+      eventName === "session_update" ||
       (eventCategory && eventCategory === "account")) 
   {
-    add("email",        userParams.email || email);
-    add("locale",       userParams.locale || locale);
+    add("email",         userParams.email     || email);
+    add("locale",        userParams.locale    || locale);
     
-    add("add_referer",    userParams.referer   || add_referer);
-    add("add_campaign",   userParams.campaign  || add_campaign);
-    add("add_placement",  userParams.placement || add_placement);
+    add("ad_referer",    userParams.referer   || ad_referer);
+    add("ad_campaign",   userParams.campaign  || ad_campaign);
+    add("ad_placement",  userParams.placement || ad_placement);
     
-    add("longitute",      userParams.longitude || longitude);
-    add("latitude",       userParams.latitude  || latitude);
+    add("longitute",     userParams.longitude || longitude);
+    add("latitude",      userParams.latitude  || latitude);
+    
+    
+    if (browserMode)
+    {
+      add("http_referrer", document.referrer);
+      add("http_request", window.location.href);
+    }
+    
+    // send host only, if explicitly set or presently in browser mode
+    add("host", host || (browserMode ? window.location.host : null));
   }
   
   return params;
@@ -519,9 +544,9 @@ var Sample =
   
   setReferer: function(referer, campaign, placement)
   {
-    add_referer = referer || null;
-    add_campaign = campaign || null;
-    add_placement = placement || null;
+    ad_referer = referer || null;
+    ad_campaign = campaign || null;
+    ad_placement = placement || null;
   },
   
   setDebug: function(flag) 
@@ -529,6 +554,15 @@ var Sample =
     debug = flag;
   },
   
+  setBrowserMode: function(flag)
+  {
+    inBrowser = !!flag;
+  },
+  
+  setHost : function(hostname)
+  {
+    host = hostname;
+  },
   
   // /////////////////////////////////////////////////////////////////////////
   //
@@ -690,9 +724,23 @@ var Sample =
   
   // /////////////////////////////////////////////////////////////////////////
   //
-  //   PAYMENT EVENTS
+  //   PURCHASE EVENTS
   //
   // /////////////////////////////////////////////////////////////////////////
+  
+  purchase: function(product_id, params)
+  {
+    var userParams = params || {};
+    userParams.product_sku = product_id;
+    this.track('purchase', 'revenue', userParams);
+  },
+  
+  chargeback: function(product_id, params)
+  {
+    var userParams = params || {};
+    userParams.product_sku = product_id;
+    this.track('chargeback', 'revenue', userParams);
+  },
   
   
   // /////////////////////////////////////////////////////////////////////////
