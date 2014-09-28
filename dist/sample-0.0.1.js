@@ -93,12 +93,12 @@ var encodeArray = function(array, name)
 
 var Pixel = (function() {
   
-  var counter = 9900;
+  var counter   = 9900;
   var wrapperId = 'sample-js-iframes';
   
   var insertElement = function(url, callback)
   {
-    var hook    = document.getElementById(wrapperId);
+    var hook   = document.getElementById(wrapperId);
     
     if (!hook)
     {
@@ -115,25 +115,28 @@ var Pixel = (function() {
     var element = document.createElement('iframe');
     var key     = "sample-key-" + counter++;
     
-    element.src = url;
-    element.id = key;
-    element.style.width = "1px";
-    element.style.height ="1px";
-    element.style.border = "0";
-    element.style.margin = "0";
-    element.style.padding = "0";
-    element.style.position = "fixed";
-    element.style.left = "0";
-    element.style.top = "0";
-    
-    element.onload = function() {
+    function handler() 
+    { 
       if (callback)
       {
         callback();
       }      
-
-      body.removeChild(element);
-    };
+      hook.removeChild(element);      
+    }
+    
+    element.onload  = handler;
+    element.onerror = handler;
+    
+    element.src = url;
+    element.id = key;
+    element.style.position = "fixed";
+    element.style.width    = "1px";
+    element.style.height   = "1px";
+    element.style.border   = "0";
+    element.style.margin   = "0";
+    element.style.padding  = "0";
+    element.style.left     = "0";
+    element.style.top      = "0";
     
     hook.appendChild(element);
   };
