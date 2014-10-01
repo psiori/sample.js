@@ -196,9 +196,16 @@ define(function(require)
         injectTrack(function(params, callback) {
           params.event_name.should.equal('session_start');
           params.event_category.should.equal('session');
+          params.user_id.should.equal('my_user_id');
+          params.ad_referer.should.equal('my_referer');
+          params.ad_campaign.should.equal('my_campaign');
+          params.ad_placement.should.equal('my_placement');
           haveBeenCalled = true;
         }, function() {
-          Sample.sessionStart();
+          Sample.sessionStart('myToken', 'my_user_id',
+                              {ad_referer: 'my_referer',
+                              ad_campaign: 'my_campaign',
+                              ad_placement: 'my_placement'});
           haveBeenCalled.should.equal(true);
         });
       });
@@ -213,9 +220,14 @@ define(function(require)
         injectTrack(function(params, callback) {
           params.event_name.should.equal('session_update');
           params.event_category.should.equal('session');
+          params.ad_referer.should.equal('my_referer');
+          params.ad_campaign.should.equal('my_campaign');
+          params.ad_placement.should.equal('my_placement');
           haveBeenCalled = true;
         }, function() {
-          Sample.sessionUpdate();
+                    Sample.sessionUpdate({ad_referer: 'my_referer',
+                                         ad_campaign: 'my_campaign',
+                                         ad_placement: 'my_placement'});
           haveBeenCalled.should.equal(true);
         });
       });

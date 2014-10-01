@@ -398,9 +398,9 @@ var mergeParams = function(userParams, eventName, eventCategory)
     add("email",         userParams.email     || email);
     add("locale",        userParams.locale    || locale);
     
-    add("ad_referer",    userParams.referer   || ad_referer);
-    add("ad_campaign",   userParams.campaign  || ad_campaign);
-    add("ad_placement",  userParams.placement || ad_placement);
+    add("ad_referer",    userParams.ad_referer   || ad_referer);
+    add("ad_campaign",   userParams.ad_campaign  || ad_campaign);
+    add("ad_placement",  userParams.ad_placement || ad_placement);
     
     add("longitute",     userParams.longitude || longitude);
     add("latitude",      userParams.latitude  || latitude);
@@ -626,15 +626,16 @@ var Sample =
   // /////////////////////////////////////////////////////////////////////////
   
   /** should be send on the start of a new session. */
-  sessionStart: function(newAppToken) 
+  sessionStart: function(newAppToken, newUserId, params)
   {
     appToken = newAppToken || appToken;
-    this.track('session_start', 'session');
+    userId = newUserId || userId;
+    this.track('session_start', 'session', params);
   },
   
-  sessionUpdate: function() 
+  sessionUpdate: function(params)
   {
-    this.track('session_update', 'session');
+    this.track('session_update', 'session', params);
   },
   
   sessionPause: function()
