@@ -75,7 +75,7 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: ['tmp', 'dist'],
+    clean: ['tmp'],
     
     concat: {
       options: {
