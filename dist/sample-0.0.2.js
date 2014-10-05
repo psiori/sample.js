@@ -50,7 +50,7 @@ var XHRPost = (function()
 
 var isArray = function(arg)
 {
-  if (typeof Array.isArray === 'undefined') 
+  if (typeof Array.isArray !== 'undefined') 
   {
     return Array.isArray(arg);
   }

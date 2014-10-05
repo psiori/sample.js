@@ -25,6 +25,25 @@ define(function(require)
   
   describe('Pixel', function() 
   {
+    describe('-isArray()', function() 
+    {
+      it('should correctly identify arrays', function ()
+      {
+        var array = [];
+        var nonArray = {};
+        
+        isArray(array).should.be.ok;
+        isArray(nonArray).should.not.be.ok;
+      });
+
+      it('should use Array.isArray if present', function ()
+      { // this test was introduced to a bug in the isArray function
+        var oldFunc = Array.isArray;
+        Array.isArray = function() { return 'usedArray'; };
+        isArray([]).should.equal('usedArray');
+      });      
+    });
+    
     describe('#send()', function () 
     {
       it('should add element to DOM', function () 
