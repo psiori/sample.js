@@ -9,44 +9,9 @@
 
 
 
-(function (window, undefined) {
-
-var XHRPost = (function() 
-{
-  var that = {
-    
-    send: function(url, data, onSuccess, onFailure) 
-    {
-      var string = JSON.stringify(data);
-      var self = this;
-
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("load", function() 
-      {
-         if (onSuccess) {
-           onSuccess();
-         }
-      }, true);
-
-      xhr.addEventListener("error", function() 
-      {
-        if (onFailure) {
-          onFailure();
-        }
-      });
-
-      xhr.open("POST", url);
-      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-      xhr.send(string);
-    }
-  };
-  
-  return that;
-  
-})();
-
-
+(function (window, undefined) {//
+// Contains helper functions that will be hidden in the library's closure.
+//
 
 var isArray = function(arg)
 {
@@ -89,6 +54,42 @@ var encodeArray = function(array, name)
   }
   return components;
 };
+
+
+var XHRPost = (function() 
+{
+  var that = {
+    
+    send: function(url, data, onSuccess, onFailure) 
+    {
+      var string = JSON.stringify(data);
+      var self = this;
+
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("load", function() 
+      {
+         if (onSuccess) {
+           onSuccess();
+         }
+      }, true);
+
+      xhr.addEventListener("error", function() 
+      {
+        if (onFailure) {
+          onFailure();
+        }
+      });
+
+      xhr.open("POST", url);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+      xhr.send(string);
+    }
+  };
+  
+  return that;
+  
+})();
 
 
 var Pixel = (function() {
@@ -704,7 +705,7 @@ var Sample =
     var args = { 
       content_type: content_type
     };
-    if (Array.isArray(content_ids)) 
+    if (isArray(content_ids)) 
     {
       args.content_ids = content_ids;
     }

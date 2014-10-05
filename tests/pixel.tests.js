@@ -1,49 +1,7 @@
 define(function(require) 
 {
-  describe('Pixel-Helpers', function() 
-  {
-    describe('#isArray()', function () 
-    {
-      it('should return true for arrays', function () 
-      {
-        isArray([]).should.ok;
-        isArray([1]).should.ok;
-        isArray([1,2]).should.ok;
-        isArray(new Array(1,2)).ok;
-      });
-      
-      it('should return false for other datatypes', function () 
-      {
-        isArray().should.equal(false);
-        isArray(null).should.equal(false);
-        isArray({ key1: "1", key2: "2" }).should.equal(false);
-        isArray(1).should.equal(false);
-        isArray("array").should.equal(false);
-      });
-    });    
-  });
-  
   describe('Pixel', function() 
   {
-    describe('-isArray()', function() 
-    {
-      it('should correctly identify arrays', function ()
-      {
-        var array = [];
-        var nonArray = {};
-        
-        isArray(array).should.be.ok;
-        isArray(nonArray).should.not.be.ok;
-      });
-
-      it('should use Array.isArray if present', function ()
-      { // this test was introduced to a bug in the isArray function
-        var oldFunc = Array.isArray;
-        Array.isArray = function() { return 'usedArray'; };
-        isArray([]).should.equal('usedArray');
-      });      
-    });
-    
     describe('#send()', function () 
     {
       it('should add element to DOM', function () 
