@@ -1,6 +1,6 @@
 define(function(require) 
 {
-  describe('Pixel-Helpers', function() 
+  describe('Util', function() 
   {
     describe('#isArray()', function () 
     {
