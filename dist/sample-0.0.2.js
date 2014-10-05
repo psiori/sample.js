@@ -309,7 +309,7 @@ var chooseProtocol = function()
   var protocol = (location.protocol || "https:");
   if (protocol !== "http:" && protocol !=="https:")
   {
-    protocol = "http:";
+    protocol = "https:";
   }
   return protocol;
 };
@@ -351,7 +351,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   };
 
   add("sdk",            sdk);
-  add("sdk_event",      sdk_version);
+  add("sdk_version",    sdk_version);
   
   add("platform",       userParams.platform       || platform);
   add("client",         userParams.client         || client);
