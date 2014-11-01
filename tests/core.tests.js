@@ -164,7 +164,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('trackEvent');
           haveBeenCalled = true;
         }, function() {
@@ -177,7 +177,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.content_id.should.equal(99);
           haveBeenCalled = true;
         }, function() {
@@ -193,7 +193,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('session_start');
           params.event_category.should.equal('session');
           params.user_id.should.equal('my_user_id');
@@ -217,7 +217,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('session_update');
           params.event_category.should.equal('session');
           params.ad_referer.should.equal('my_referer');
@@ -239,7 +239,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('ping');
           params.event_category.should.equal('session');
           haveBeenCalled = true;
@@ -282,7 +282,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('usage');
           params.event_category.should.equal('content');
           params.content_type.should.equal('content');
@@ -298,7 +298,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('usage');
           params.event_category.should.equal('content');
           params.content_type.should.equal('page');
@@ -314,7 +314,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('usage');
           params.event_category.should.equal('content');
           params.content_type.should.equal('content');
@@ -340,7 +340,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('purchase');
           params.event_category.should.equal('revenue');
           
@@ -369,7 +369,7 @@ define(function(require)
       {
         var haveBeenCalled = false;
         
-        injectTrack(function(params, callback) {
+        injectTrack(function(url, params, callback) {
           params.event_name.should.equal('chargeback');
           params.event_category.should.equal('revenue');
           
