@@ -34,7 +34,12 @@
         Sample.track('group_event2');
         Sample.endGroup();
         
-        Sample.contentUsage(1);
+        Sample.contentUsage(1, null, {
+          callback: function(payload, request) {
+            console.debug(payload, request.status, request);
+            alert("Content Usage event: " + request.status);
+          }
+        });
         Sample.contentUsage([2, 3]);
         
         setTimeout(function() {
