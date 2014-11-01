@@ -466,27 +466,33 @@ var Sample =
     connector.setRequestMethod(this.isWebkit() ? "xhr" : "iframe");
   },
   
+  /** Stops the tracking of user events */
   stop: function() 
   {
     connector.stop();
   },
   
+  /** Resumes the tracking of user events */
   resume: function() 
   {
     connector.start();
   },
   
+  /** Sets the endpoint.
+  	* The endpoint specifies the location where the events will be send to
+  	*/
   setEndpoint: function(newEndpoint) 
   {
     endpoint = newEndpoint;
   },
 
+  /** Returns the endpoint */
   getEndpoint: function() 
   {
     return endpoint;
   },
 
-  /** sets the method being used to communicate with the event server.
+  /** Sets the method being used to communicate with the event server.
     * request methods to choose from: xhr (recommended), img (legacy,
     * works across different origins), iframe (legacy with same origin) 
     */
@@ -495,57 +501,80 @@ var Sample =
     connector.setRequestMethod(method);
   },
 
+  /** Sets the app token.
+    * Remember that it should be unique across all your apps
+    */
   setAppToken: function(newAppToken) 
   {
     appToken = newAppToken;
   },
   
+  /** Sets the module.
+    * Probably you want to separate your app into parts for better event
+    * evaluation
+    */
   setModule: function(newModule) 
   {
     module = newModule;
   },
   
+  /** Sets the plattform
+    * E.g. iOS, android
+    */
   setPlatform: function(newPlatform) 
   {
     platform = newPlatform;
   },
   
+  /** Sets the client id */
   setClient: function(clientId) 
   {
     client = clientId;
   },
   
+  /** Sets the clients version */
   setClientVersion: function(newClientVersion) 
   {
     client_version = newClientVersion;
   },
   
+  /** Sets the user id of the current user */
   setUserId: function(newUserId) 
   {
     userId = newUserId;
   },
   
+  /** Sets the facebook id of the current facebook user */
   setFacebookId: function(newFacebookId)
   {
     facebookId = newFacebookId;
   },
   
+  /** Sets the email of the current user
+    */
   setEmail: function(newEmail) 
   {
     email = newEmail;
   },
   
+  /** Sets the users location in form of latitude and longitude
+    */
   setLocation: function(newLongitude, newLatitude)
   {
     longitude = newLogitude;
     latitude = newLatitude;
   },
   
+  /** Sets the local
+    * E.g. DE, EN
+    */
   setLocale: function(newLocale)
   {
     locale = newLocale;
   },
   
+  /** Sets the ad referrer, campaign and placement for all events
+    */
   setReferer: function(referer, campaign, placement)
   {
     ad_referer = referer || null;
@@ -553,16 +582,27 @@ var Sample =
     ad_placement = placement || null;
   },
   
+  /** Enable debug mode if the event should not be considered in evaluations
+    */
   setDebug: function(flag) 
   {
     debug = flag;
   },
   
+  /** sets the browser mode
+    * Indicates whether or not the application runs in a browser. If browser mode is enabled 
+    * additional such as the http_referer, the http_request and the host will be send with each 
+    * event.
+    */
   setBrowserMode: function(flag)
   {
     inBrowser = !!flag;
   },
   
+  /** sets the hostname
+    * The host name will be send with each event, if it is set explicitly or when browser mode is
+    * enabled
+    */
   setHost : function(hostname)
   {
     host = hostname;
@@ -626,7 +666,11 @@ var Sample =
   //
   // /////////////////////////////////////////////////////////////////////////
   
-  /** should be send on the start of a new session. */
+  /** should be send on the start of a new session. 
+    * At the start of each session send one sessionStart event with an appToken. Make sure that
+    * the userId is set before starting this function. 
+    * The params are optional.
+    */
   sessionStart: function(newAppToken, newUserId, params)
   {
     appToken = newAppToken || appToken;
@@ -634,21 +678,29 @@ var Sample =
     this.track('session_start', 'session', params);
   },
   
+  /** should be send when the session receives an update 
+    * The parameters field is optional.
+    */
   sessionUpdate: function(params)
   {
     this.track('session_update', 'session', params);
   },
   
+  /** should be send when the session gets paused */
   sessionPause: function()
   {
     this.track('session_pause', 'session');
   },
   
+  /** should be send when the session resumes */
   sessionResume: function()
   {
     this.track('session_resume', 'session');
   },
   
+  /** sends one ping event to the server.
+    * if you want to send ping events automaticaly use the autoping method
+    */
   ping: function() 
   {
     this.track('ping', 'session');
@@ -680,12 +732,18 @@ var Sample =
   //
   // /////////////////////////////////////////////////////////////////////////
   
+  /** Should be send when a new user did register
+    * Each registration takes, besides the user id, an optional list of key-value pairs.
+    */
   registration: function(newUserId, params)
   {
     userId = newUserId || userId;
     this.track('registration', 'account', params);
   },
   
+  /** Should be send when an existing user signs in
+    * Each sign intakes, besides the user id, an optional list of key-value pairs.
+    */
   signIn: function(newUserId, params)
   {
     userId = newUserId || userId;
@@ -699,6 +757,11 @@ var Sample =
   //
   // /////////////////////////////////////////////////////////////////////////
   
+  /** should be send when a user interacts with one or more contents in-app 
+    * A content usage event should take at least one product id. Multiple product ids can be 
+    * passed as array. The content type is optional, wheres if no type is provided the default 
+    * one, ‘content’ is taken.
+    */
   contentUsage: function(content_ids, content_type) 
   {
     content_type = content_type || 'content';
@@ -730,6 +793,11 @@ var Sample =
   //
   // /////////////////////////////////////////////////////////////////////////
   
+  /** should be send when a user triggers a purchase 
+    * A purchase event should take at minimum the product_id, provider(payment provider), gross, 
+    * currency, country and the product_category. The product id is identical with the product 
+    * sku.
+    */
   purchase: function(product_id, params)
   {
     var userParams = params || {};
@@ -737,6 +805,11 @@ var Sample =
     this.track('purchase', 'revenue', userParams);
   },
   
+  /** should be send when a users charges his money back
+    * A chargeback event should take at minimum the product_id, provider(payment provider), gross,
+    * currency, country and the product_category. The product id is identical with the product 
+    * sku.
+    */
   chargeback: function(product_id, params)
   {
     var userParams = params || {};
