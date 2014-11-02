@@ -41,12 +41,13 @@ define(function(require) {
                      });
       });
       
-      it('should fail on non-existent endpoint', function(done) {
+      it('should fail on non-existent endpoint or return 404', function(done) {
         var data = { p: { app_token: app_token, event_name: "xhr_test", debug: true } };
         
         XHRPost.send(endpointNE, data,
                      function(payload, request) {
-                              should.exist(undefined);
+                              should.exist(request);
+                              request.status.should.equal(404);
                               done();
                      },
                      function(payload, request) {
