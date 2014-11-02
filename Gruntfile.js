@@ -113,8 +113,8 @@ module.exports = function(grunt) {
       },
       jenkins: {
         src: ['tests/**/*.html'],
-        dest: 'tmp/test-result.xml',
         options: {
+          output: 'tmp/test-result.xml',
           reporter: 'xunit',
           setting: ["localToRemoteUrlAccessEnabled=true", "web-security=false"]
         }
