@@ -103,20 +103,31 @@ module.exports = function(grunt) {
       }
     },
     
-    mocha_phantomjs: {
+    mocha: {
+      options: {
+        page: { 
+          // inject arguments into PhantomJS page.settings object
+          // found here: https://github.com/kmiyashiro/grunt-mocha
+          // would work in grunt-mocha, but not in grunt-blanket-mocha :(
+          settings: {
+            localToRemoteUrlAccessEnabled: true,
+            webSecurityEnabled: false
+          }
+        }        
+      },
       test: {
         src: ['tests/**/*.html'],
         options: {
-          reporter: 'spec',
-          setting: ["localToRemoteUrlAccessEnabled=true", "web-security=false"]
+          reporter: 'Spec',
+          log: true,
+          logErrors: true
         }
       },
       jenkins: {
         src: ['tests/**/*.html'],
+        dest: 'tmp/test-result.xml',
         options: {
-          output: 'tmp/test-result.xml',
-          reporter: 'xunit',
-          setting: ["localToRemoteUrlAccessEnabled=true", "web-security=false"]
+          reporter: 'XUnit'
         }
       }
     },
@@ -128,9 +139,14 @@ module.exports = function(grunt) {
           threshold : 50,
           globalThreshold : 90,
           page: { 
-            // inject arguments into PhantomJS page.settings object
-            // found here: https://github.com/kmiyashiro/grunt-mocha
-            // would work in grunt-mocha, but not in grunt-blanket-mocha :(
+            // this is the same trick as above. since unfortunately
+            // grunt-blanket-mocha didn't pull the solution to set
+            // page properties as grunt-mocha did, we created a 
+            // local fork (https://github.com/wackadoo/grunt-blanket-mocha),
+            // solved the issue there and posted a pull request to
+            // grunt-blanket-mocha. Until they merged our solution or
+            // solved the problem otherwise, we'll need our locally
+            // modified version.
             settings: {
               localToRemoteUrlAccessEnabled: true,
               webSecurity: false
@@ -154,13 +170,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-blanket-mocha');
-  grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-mocha-require-phantom');
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-shell');
   
-  grunt.registerTask('test', 'mocha_phantomjs:test');
-  grunt.registerTask('test-jenkins', 'mocha_phantomjs:jenkins');
+  grunt.registerTask('test', 'mocha:test');
+  grunt.registerTask('test-jenkins', 'mocha:jenkins');
   grunt.registerTask('test-coverage', 'blanket_mocha');
     
   grunt.registerTask('stable', [
@@ -172,6 +187,7 @@ module.exports = function(grunt) {
     'clean',
     'jshint',
     'test',
+    'test-coverage',
     'stable'
   ]);
   
@@ -179,6 +195,7 @@ module.exports = function(grunt) {
     'clean',
     'jshint:jenkins',
     'test-jenkins',
+    'test-coverage',
     'stable'
   ]);
 
