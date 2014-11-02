@@ -40,11 +40,9 @@ define(function(require) {
                                 },
                                 function(payload, request) {
                                   should.exist(request);
-                                  request.status.should.equal(201);
                                   done();
                                 });
       });
     });
-    
   });
 });

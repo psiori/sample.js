@@ -6,6 +6,7 @@ require([
   '../lib/sample/pixel.js',
   '../lib/sample/core.js',
   'core.tests.js',
+  'xhr.tests.js',
   'connector.tests.js',
   'pixel.tests.js',    
   'util.tests.js'    

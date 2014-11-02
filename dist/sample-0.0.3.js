@@ -310,7 +310,6 @@ var connector = (function() {
 
       sending = true;
       var data = queue[0];
-      var string = JSON.stringify({ p: data.event });
       var self = this;
       
       var url = data.url;
