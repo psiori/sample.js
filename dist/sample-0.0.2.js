@@ -55,6 +55,11 @@ var encodeArray = function(array, name)
   return components;
 };
 
+var isOnline = function()
+{
+  return navigator.userAgent.match(/PhantomJS/) || navigator.onLine;
+};
+
 
 var XHRPost = (function() 
 {
@@ -64,19 +69,43 @@ var XHRPost = (function()
     {
       var string = JSON.stringify(data);
       var self = this;
-
+      
       var xhr = new XMLHttpRequest();
       xhr.addEventListener("load", function() 
       {
-         if (onSuccess) {
-           onSuccess();
+         if (onSuccess) 
+         {
+           var request = {
+             status: xhr.status,
+             headers: xhr.getResponseHeader,
+             url: url
+           };
+           var payload = {};
+           
+           try {
+               payload = JSON.parse(payload.responseText);
+           } catch (e) {}           
+           
+           onSuccess(payload, request);
          }
       }, true);
 
       xhr.addEventListener("error", function() 
       {
-        if (onFailure) {
-          onFailure();
+        if (onFailure) 
+        {
+          var request = {
+            status: xhr.status,
+            headers: xhr.getResponseHeader,
+            url: url
+          };
+          var payload = {};
+          
+          try {
+              payload = JSON.parse(payload.responseText);
+          } catch (e) {}
+          
+          onFailure(payload, request);
         }
       });
 
@@ -196,7 +225,7 @@ var connector = (function() {
       running = true;
       timer = setInterval(function() {
         that.sendNext();
-      }, 1000);
+      }, 5000);
     },
     
     stop: function() {
@@ -204,7 +233,7 @@ var connector = (function() {
         return ;
       }
       running = false;
-      clearTimeout(timer);
+      clearInterval(timer);
     },
     
     isRunning: function() {
@@ -241,14 +270,14 @@ var connector = (function() {
       }
       
       group = createGroup();
-      this.add(tmp.events, tmp.callback);
+      this.add(tmp.url, tmp.events, tmp.callback);
     },
     
     isGroup: function() {
       return grouping;
     },
 
-    add: function(event, callback) {
+    add: function(url, event, callback) {
       if (grouping) {
         if (callback) {
           var gc = group.callback;
@@ -258,18 +287,24 @@ var connector = (function() {
           };
         }
         group.events[group.events.length] = event;
+        group.url = url; // last url will win
       }
       else {
         queue[queue.length] = {
           event: event,
-          callback: callback
+          callback: callback,
+          url: url
         };
         this.sendNext();
       }
     },
 
+    clear: function() {
+      queue = [];
+    },
+
     sendNext: function() {
-      if (!running || sending || this.isEmpty()) {
+      if (!running || !isOnline() || sending || this.isEmpty()) {
         return ;
       }
 
@@ -278,16 +313,45 @@ var connector = (function() {
       var string = JSON.stringify({ p: data.event });
       var self = this;
       
-      var url = Sample.getEndpoint();
+      var url = data.url;
       var payload = { p: data.event };
-      var success = function() {
+      
+      var success = function(payload, request) 
+      {
         queue.shift();
         
         sending = false;
         self.sendNext();
+        if (typeof data.callback === "function")
+        {
+          data.callback.call(data.callback, payload, request);
+        }
       };
-      var error = function() {
+      
+      var error = function(payload, request) 
+      {
         sending = false;
+        
+        if (request.status === 400 || request.status === 500)
+        {
+          console.error("Bad request or internal server error during call to " + url + 
+                        ". Will not retry. Code " + request.status);
+          queue.shift();
+          self.sendNext();
+          
+          if (typeof data.callback === "function")
+          {
+            data.callback.call(data.callback, payload, request);
+          }
+        }
+        else 
+        {
+          console.debug("Call to " + url + " did not succeed. Will retry. Code " + request.status);
+        
+          setTimeout(function() {
+            self.sendNext();
+          }, 500);
+        }
       };
       
       if (this.useXHR) {
@@ -298,6 +362,13 @@ var connector = (function() {
       }
     }
   };
+  
+  document.addEventListener("online", function() {
+    that.sendNext();
+  });
+  document.addEventListener("offline", function() {
+    // presently nothing to do on going offline.
+  });
   
   that.start();
   
@@ -377,6 +448,8 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("parameter4",     userParams.parameter4);
   add("parameter5",     userParams.parameter5);
   add("parameter6",     userParams.parameter6);
+  
+  add("callback",       userParams.callback);
   
   if (eventName === "purchase" ||
       eventName === "chargeback")
@@ -656,7 +729,7 @@ var Sample =
   track: function(eventName, eventCategory, params) 
   {
     params = mergeParams(params || {}, eventName, eventCategory);
-    connector.add(params, function() { });
+    connector.add(endpoint, params, params.callback);
   },
   
   
@@ -762,21 +835,20 @@ var Sample =
     * passed as array. The content type is optional, wheres if no type is provided the default 
     * one, ‘content’ is taken.
     */
-  contentUsage: function(content_ids, content_type) 
+  contentUsage: function(content_ids, content_type, params) 
   {
-    content_type = content_type || 'content';
-    var args = { 
-      content_type: content_type
-    };
+    params = params || {};
+    params.content_type = content_type || params.content_type || 'content';
+
     if (isArray(content_ids)) 
     {
-      args.content_ids = content_ids;
+      params.content_ids = content_ids;
     }
     else 
     {
-      args.content_id = content_ids;      
+      params.content_id = content_ids;      
     }
-    this.track('usage', 'content', args);
+    this.track('usage', 'content', params);
   },
   
   

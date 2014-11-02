@@ -103,20 +103,20 @@ module.exports = function(grunt) {
       }
     },
     
-    mocha: {
+    mocha_phantomjs: {
       test: {
         src: ['tests/**/*.html'],
         options: {
-          run: false,
-          reporter: 'Spec'
+          reporter: 'spec',
+          setting: ["localToRemoteUrlAccessEnabled=true", "web-security=false"]
         }
       },
       jenkins: {
         src: ['tests/**/*.html'],
         dest: 'tmp/test-result.xml',
         options: {
-          run: false,
-          reporter: 'XUnit'
+          reporter: 'xunit',
+          setting: ["localToRemoteUrlAccessEnabled=true", "web-security=false"]
         }
       }
     },
@@ -126,7 +126,18 @@ module.exports = function(grunt) {
         src: ['tests/**/*.html'],
         options : {
           threshold : 50,
-          globalThreshold : 90
+          globalThreshold : 90,
+          page: { 
+            // inject arguments into PhantomJS page.settings object
+            // found here: https://github.com/kmiyashiro/grunt-mocha
+            // would work in grunt-mocha, but not in grunt-blanket-mocha :(
+            settings: {
+              localToRemoteUrlAccessEnabled: true,
+              webSecurity: false
+            }
+          },
+          log: true,
+          logErrors: true
         }
       }
     }
@@ -143,10 +154,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-blanket-mocha');
+  grunt.loadNpmTasks('grunt-mocha-phantomjs');
+  grunt.loadNpmTasks('grunt-mocha-require-phantom');
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-shell');
   
-  grunt.registerTask('test', 'mocha:test');
+  grunt.registerTask('test', 'mocha_phantomjs:test');
+  grunt.registerTask('test-jenkins', 'mocha_phantomjs:jenkins');
   grunt.registerTask('test-coverage', 'blanket_mocha');
     
   grunt.registerTask('stable', [
@@ -158,15 +172,13 @@ module.exports = function(grunt) {
     'clean',
     'jshint',
     'test',
-    'test-coverage',
     'stable'
   ]);
   
   grunt.registerTask('jenkins', [
     'clean',
     'jshint:jenkins',
-    'mocha:jenkins',
-    'test-coverage',
+    'test-jenkins',
     'stable'
   ]);
 

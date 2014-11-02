@@ -32,7 +32,7 @@ define(function(require) {
         connector.useXHR.should.equal(true);
         connector.clear();
         connector.isEmpty().should.equal(true);
-        connector.start();
+        connector.start(); 
         connector.add(endpoint, {
                                   app_token: app_token,
                                   event_name: "test", 
@@ -40,6 +40,7 @@ define(function(require) {
                                 },
                                 function(payload, request) {
                                   should.exist(request);
+                                  request.status.should.equal(201);
                                   done();
                                 });
       });
