@@ -344,20 +344,20 @@ define(function(require)
           params.event_name.should.equal('purchase');
           params.event_category.should.equal('revenue');
           
-          params.provider.should.equal("provider");
-          params.gross.should.equal(80);
-          params.currency.should.equal("EUR");
-          params.country.should.equal("DE");
-          params.earnings.should.equal(1);
-          params.product_category.should.equal("category");
-          params.receipt_identifier.should.equal("identifier");
+          params.pur_provider.should.equal("provider");
+          params.pur_gross.should.equal(80);
+          params.pur_currency.should.equal("EUR");
+          params.pur_country_code.should.equal("DE");
+          params.pur_earnings.should.equal(1);
+          params.pur_product_category.should.equal("category");
+          params.pur_receipt_identifier.should.equal("identifier");
          
           haveBeenCalled = true;
         }, function () {
-          Sample.purchase(99, {provider: "provider", gross: 80,
-                          currency:"EUR", country:"DE",
-                          earnings:1, product_category:"category",
-                          receipt_identifier: "identifier"});
+          Sample.purchase(99, {pur_provider: "provider", pur_gross: 80,
+                          pur_currency:"EUR", pur_country_code:"DE",
+                          pur_earnings:1, pur_product_category:"category",
+                          pur_receipt_identifier: "identifier"});
           haveBeenCalled.should.equal(true);
         });
       });
@@ -373,20 +373,20 @@ define(function(require)
           params.event_name.should.equal('chargeback');
           params.event_category.should.equal('revenue');
           
-          params.provider.should.equal("provider");
-          params.gross.should.equal(80);
-          params.currency.should.equal("EUR");
-          params.country.should.equal("DE");
-          params.earnings.should.equal(1);
-          params.product_category.should.equal("category");
-          params.receipt_identifier.should.equal("identifier");
+          params.pur_provider.should.equal("provider");
+          params.pur_gross.should.equal(80);
+          params.pur_currency.should.equal("EUR");
+          params.pur_country_code.should.equal("DE");
+          params.pur_earnings.should.equal(1);
+          params.pur_product_category.should.equal("category");
+          params.pur_receipt_identifier.should.equal("identifier");
           
           haveBeenCalled = true;
         }, function () {
-          Sample.chargeback(99, {provider: "provider", gross: 80,
-                            currency:"EUR", country:"DE",
-                            earnings:1, product_category:"category",
-                            receipt_identifier: "identifier"});
+          Sample.chargeback(99, {pur_provider: "provider", pur_gross: 80,
+                            pur_currency:"EUR", pur_country_code:"DE",
+                            pur_earnings:1, pur_product_category:"category",
+                            pur_receipt_identifier: "identifier"});
           haveBeenCalled.should.equal(true);
         });
       });
