@@ -523,21 +523,27 @@ var Sample =
   
   init: function(params) 
   {
-    if (localStorage.getItem('SampleToken')) 
+    if (typeof localStorage !== "undefined")
     {
-      installToken = localStorage.getItem('SampleToken');
+      if (localStorage.getItem('SampleToken')) 
+      {
+        installToken = localStorage.getItem('SampleToken');
+      }
+      else 
+      {
+        localStorage.setItem('SampleToken', (installToken = randomToken(24)));
+      }
     }
-    else 
+    if (typeof sessionStorage !== "undefined")    
     {
-      localStorage.setItem('SampleToken', (installToken = randomToken(24)));
-    }
-    if (sessionStorage.getItem('SampleToken')) 
-    {
-      sessionToken = sessionStorage.getItem('SampleToken');
-    }
-    else 
-    {
-      sessionStorage.setItem('SampleToken', (sessionToken = randomToken(32)));
+      if (sessionStorage.getItem('SampleToken')) 
+      {
+        sessionToken = sessionStorage.getItem('SampleToken');
+      }
+      else 
+      {
+        sessionStorage.setItem('SampleToken', (sessionToken = randomToken(32)));
+      }
     }
     platform = this.PLATFORM_BROWSER;
     connector.setRequestMethod(this.isWebkit() ? "xhr" : "iframe");
