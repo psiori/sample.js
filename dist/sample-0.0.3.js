@@ -552,7 +552,7 @@ var Sample =
     {}
     
     platform = this.PLATFORM_BROWSER;
-    connector.setRequestMethod(this.isWebkit() ? "xhr" : "iframe");
+    connector.setRequestMethod("xhr");
   },
   
   /** Stops the tracking of user events */
