@@ -386,7 +386,7 @@ var chooseProtocol = function()
 
 var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     sdk            = "Sample.JS",
-    sdk_version    = "0.0.2",
+    sdk_version    = "0.0.3",
     installToken   = null,
     appToken       = null,
     sessionToken   = null,
