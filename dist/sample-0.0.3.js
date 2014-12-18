@@ -442,6 +442,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("content_id",     userParams.content_id);
   add("content_ids",    userParams.content_ids);
   add("content_type",   userParams.content_type);
+  add("page_id",        userParams.page_id);
   
   add("parameter1",     userParams.parameter1);
   add("parameter2",     userParams.parameter2);
@@ -892,6 +893,22 @@ var Sample =
       params.content_id = content_ids;      
     }
     this.track('usage', 'content', params);
+  },
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //  PAGE EVENTS
+  //
+  // /////////////////////////////////////////////////////////////////////////
+    
+  /** should be send when a user opens a page
+    * An open page event should take at least one product id.
+    */
+  openPage: function(page_id, params) 
+  {
+    params = params || {};
+    params.page_id = page_id;
+    this.track('open_page', 'content', params);
   },
   
   

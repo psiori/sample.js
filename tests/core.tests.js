@@ -359,6 +359,24 @@ define(function(require)
         });
       });      
     });
+    
+    describe('#openPage', function () 
+    {
+      it('should send correct event for a apge id to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('open_page');
+          params.event_category.should.equal('content');
+          params.page_id.should.equal(90);
+          haveBeenCalled = true;
+        }, function() {
+          Sample.openPage(90);
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
            
     describe('#purchase', function ()
     {
