@@ -2,7 +2,7 @@
  * Sample.js - Sends tracking events to 5d's analytics service. v0.0.3
  * http://www.5dlab.com
  *
- * Copyright (c) 2014-2014, Sascha Lange, João Alves
+ * Copyright (c) 2014-2015, Sascha Lange, João Alves
  * Licensed under the MIT License.
  *
  */
@@ -406,9 +406,80 @@ var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     host           = null,
     facebook_id    = null,
     country_code   = null,
+    present_page_id= null,
     browserMode    = true,
-    debug          = false;
+    debugMode      = false;
     
+    
+var getItemInStorage = function(key, storage)
+{
+  storage = storage || "sessionStorage";
+  
+  try // safari on private settings (do not allow websites to store local data)   
+  {   // throws a security exception already when trying to get the typeof.
+    if (typeof window[storage] !== "undefined")
+    {
+      return window[storage].getItem(key);
+    }
+  } 
+  catch (e) 
+  {}
+  
+  return null;
+};
+
+var setItemInStorage = function(key, value, storage)
+{
+  storage = storage || "sessionStorage"; // default is sessionStorage
+  
+  try // safari on private settings (do not allow websites to store local data)   
+  {   // throws a security exception already when trying to get the typeof.
+    if (typeof window[storage] !== "undefined")
+    {
+      window[storage].setItem(key, value);
+      return window[storage].getItem(key);
+    }
+  } 
+  catch (e) 
+  {}
+  
+  return null;
+};
+
+var removeItemInStorage = function(key, storage)
+{
+  storage = storage || "sessionStorage"; // default is sessionStorage
+  
+  try // safari on private settings (do not allow websites to store local data)   
+  {   // throws a security exception already when trying to get the typeof.
+    if (typeof window[storage] !== "undefined")
+    {
+      window[storage].removeItem(key);
+    }
+  } 
+  catch (e) 
+  {}
+  
+  return null;
+};
+
+var setPageId = function(page_id) 
+{
+  present_page_id = page_id;
+  return setItemInStorage('page_id', page_id);
+};
+
+var getPageId = function() 
+{
+  return getItemInStorage('page_id') || present_page_id || null;
+};
+
+var clearPageId = function() 
+{
+  present_page_id = null;
+  removeItemInStorage('page_id');
+};
+
 var mergeParams = function(userParams, eventName, eventCategory)
 {
   var params = {};
@@ -433,7 +504,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("app_token",      appToken);
   add("install_token",  installToken);
   add("session_token",  sessionToken);
-  add("debug",          debug);
+  add("debug",          debugMode);
   add("timestamp",      Math.round(new Date().getTime() /1000));
   add("user_id",        userId);
 
@@ -442,7 +513,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("content_id",     userParams.content_id);
   add("content_ids",    userParams.content_ids);
   add("content_type",   userParams.content_type);
-  add("page_id",        userParams.page_id);
+  add("page_id",        userParams.page_id || getPageId());
   
   add("parameter1",     userParams.parameter1);
   add("parameter2",     userParams.parameter2);
@@ -452,6 +523,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("parameter6",     userParams.parameter6);
   
   add("callback",       userParams.callback);
+  add("automatic",      userParams.automatic);
   
   if (eventName === "purchase" ||
       eventName === "chargeback")
@@ -494,6 +566,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
     // send host only, if explicitly set or presently in browser mode
     add("host", host || (browserMode ? window.location.host : null));
   }
+
   
   return params;
 };
@@ -514,6 +587,7 @@ var randomToken = function(length)
   return str;
 };
 
+
 var Sample = 
 {
   PLATFORM_BROWSER:  'browser',
@@ -524,34 +598,16 @@ var Sample =
   
   init: function(params) 
   {
-    try // safari on private settings (do not allow websites to store local data)   
-    {   // throws a security exception already when trying to get the typeof.
-      if (typeof localStorage !== "undefined")
-      {
-        if (localStorage.getItem('SampleToken')) 
-        {
-          installToken = localStorage.getItem('SampleToken');
-        }
-        else 
-        {
-          localStorage.setItem('SampleToken', (installToken = randomToken(24)));
-        }
-      }
-      if (typeof sessionStorage !== "undefined")    
-      {
-        if (sessionStorage.getItem('SampleToken')) 
-        {
-          sessionToken = sessionStorage.getItem('SampleToken');
-        }
-        else 
-        {
-          sessionStorage.setItem('SampleToken', (sessionToken = randomToken(32)));
-        }
-      }
-    } 
-    catch (e) 
-    {}
-    
+    if (!(installToken = getItemInStorage('SampleToken', 'localStorage')))
+    {
+      setItemInStorage('SampleToken', (installToken = randomToken(24)), 'localStorage');
+    }
+
+    if (!(sessionToken = getItemInStorage('SampleToken', 'sessionStorage')))
+    {
+      setItemInStorage('SampleToken', (sessionToken = randomToken(32)), 'sessionStorage');
+    }
+
     platform = this.PLATFORM_BROWSER;
     connector.setRequestMethod("xhr");
   },
@@ -615,6 +671,7 @@ var Sample =
   {
     platform = newPlatform;
   },
+  
 
   /** Returns the current platform
     */
@@ -683,7 +740,7 @@ var Sample =
     */
   setDebug: function(flag) 
   {
-    debug = flag;
+    debugMode = flag;
   },
   
   /** sets the browser mode
@@ -704,6 +761,7 @@ var Sample =
   {
     host = hostname;
   },
+  
 
   /** sets the installToken
     * Only use this method when you really need to overwrite the installToken.
@@ -790,6 +848,10 @@ var Sample =
     */
   sessionStart: function(newAppToken, newUserId, params)
   {
+    this.pageEnd({
+      automatic: true
+    }); // close a page that has been opened earlier. 
+    
     appToken = newAppToken || appToken;
     userId = newUserId || userId;
     this.track('session_start', 'session', params);
@@ -873,10 +935,35 @@ var Sample =
   //   CONTENT EVENTS
   //
   // /////////////////////////////////////////////////////////////////////////
+
+
+  /** should be send when a user views one or more contents. This event is
+    * used for counting views per-content. An event should send at least one 
+    * content id. Multiple content ids can be passed as array. The content type
+    * is optional, wheres if no type is provided the default 
+    * one, ‘content’ is taken (to distinguish this event from page-related 
+    * views).
+    */
+  contentView: function(content_ids, content_type, params) 
+  {
+    params = params || {};
+    params.content_type = content_type || params.content_type || 'content';
+
+    if (isArray(content_ids)) 
+    {
+      params.content_ids = content_ids;
+    }
+    else 
+    {
+      params.content_id = content_ids;      
+    }
+    this.track('view', 'content', params);
+  },
   
   /** should be send when a user interacts with one or more contents in-app 
-    * A content usage event should take at least one product id. Multiple product ids can be 
-    * passed as array. The content type is optional, wheres if no type is provided the default 
+    * A content usage event should take at least one product id. Multiple 
+    * product ids can be passed as array. The content type is optional,
+    * wheres if no type is provided the default 
     * one, ‘content’ is taken.
     */
   contentUsage: function(content_ids, content_type, params) 
@@ -900,18 +987,98 @@ var Sample =
   //  PAGE EVENTS
   //
   // /////////////////////////////////////////////////////////////////////////
-    
-  /** should be send when a user opens a page
-    * An open page event should take at least one product id.
-    */
-  openPage: function(page_id, params) 
+ 
+ 
+  /** manually tracks a single page view / page impression. Each time you
+   * send this event, the number of page impressions of the given page_id
+   * will be increased by one. 
+   *
+   * This method is the most simplest way to track page impressions. You
+   * have the full control in the client what is counted and what is not
+   * counted.
+   *
+   * Please note that this event is stateless in the sense, that it does 
+   * not support tracking of the time a user stayed on a particular page.
+   * If you want more detailed information about page usage, use the 
+   * alternative methods pageStart and pageEnd instead of using this 
+   * method.
+   *
+   * Please note, if you use pageStart AND pageView, two events will be 
+   * send and a page view will be counted twice.
+   */ 
+  pageView: function(page_id, params)
   {
-    params = params || {};
-    params.page_id = page_id;
-    this.track('open_page', 'content', params);
+    params              = params || {};
+    params.content_type = 'page';
+    params.page_id      = page_id;      
+    this.track('view', 'content', params);
+  }, 
+
+  /** tracks a single view / page impression and sets the given page_id as
+   * the present page viewed by the user. From hereon, ping-events will send
+   * this page_id until the page impression is manually ended (by calling
+   * pageEnd), another page is set with pageStart, or a call to sessionStart
+   * happens.
+   *
+   * To indicate that the user has left this page or time shouldn't be tracked
+   * any further, call pageEnd. pageEnd will be send automatically, if the 
+   * user browses to another page where a new sessionStart or / pageStart is
+   * called, or in case you do another call to pageStart within the same session,
+   * for example, because you've loaded a second page using AJAX, thus, replacing
+   * the old page, but not ending the page session.
+   *
+   * A usual implementation would have the following lines at the start of a page
+   * inside a script tag:
+   *   Sample.sessionStart();
+   *   Sample.pageStart(your_page_id);
+   *
+   * An explicit call to pageEnd is not necessary, as each page uses these calls 
+   * and thus would trigger an automatic page end.
+   * 
+   * If a pageStart is NOT ended, because for example the user closed the browser
+   * tab, PSIORI will first accumulate the time of the time-stamps of ping events
+   * including this page id, and, if there's not even a ping, would assume a 
+   * default view time of 1s. 
+   *
+   * PSIORI will also give you the precentage of page-start events that were not
+   * "closed" by an end-event.
+   *
+   * Please note that the more simple pageView call is a completely separated 
+   * mechanism that does NOT interfere with pageStart / pageEnd and that you should 
+   * NOT mix in your implementation, as it could lead to page views being counted 
+   * twice. Use either pageStart/pageEnd OR pageView.
+   */ 
+  pageStart: function(page_id, params)
+  {
+    this.pageEnd({
+      automatic: true
+    }); // close a page that has been opened earlier.
+    
+    setPageId(page_id);
+    this.pageView(page_id, params);
   },
   
-  
+  /** sends a view-end envent to indicate the user has left the present page. 
+   * Will only send an event, if there's a page that has been "opened" with
+   * a pageStart event and that hasn't been closed so far by a corresponding
+   * pageEnd call. 
+   */
+  pageEnd: function(params)
+  {
+    var page_id = getPageId();
+    
+    if (page_id) 
+    {
+      params = params || {};
+      params.page_id      = page_id;
+      params.content_type = 'page';
+      
+      this.track('view-end', 'content', params);
+      clearPageId();
+    }
+  },
+
+
   // /////////////////////////////////////////////////////////////////////////
   //
   //   PROGRESSION EVENTS

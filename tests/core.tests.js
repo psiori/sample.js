@@ -9,7 +9,7 @@ define(function(require)
       Sample.PLATFORM_BROWSER.should.equal('browser');
       Sample.PLATFORM_ANDROID.should.equal('android');
     });
-
+    
     describe('#init', function () 
     {
       it('should be called automatically during loading', function () 
@@ -124,9 +124,9 @@ define(function(require)
       it('should change debug value', function () 
       {
         Sample.setDebug(true);
-        debug.should.equal(true);
+        debugMode.should.equal(true);
         Sample.setDebug(false);
-        debug.should.equal(false);
+        debugMode.should.equal(false);
       });
     });
 
@@ -147,7 +147,7 @@ define(function(require)
          sessionToken.should.equal("2C56-9815-5C7C-945E-881F-B8FA");
       });
     });
-
+    
     describe('#[start|End]Group', function ()
     {
       it('should change set value in connector', function ()
@@ -360,23 +360,103 @@ define(function(require)
       });      
     });
     
-    describe('#openPage', function () 
+    describe('#pageView', function () 
     {
-      it('should send correct event for a apge id to connector', function ()         
+      it('should send correct event for a page id to connector', function ()         
       {
         var haveBeenCalled = false;
           
         injectTrack(function(url, params, callback) {
-          params.event_name.should.equal('open_page');
+          params.event_name.should.equal('view');
           params.event_category.should.equal('content');
+          params.content_type.should.equal('page');
           params.page_id.should.equal(90);
           haveBeenCalled = true;
         }, function() {
-          Sample.openPage(90);
+          Sample.pageView(90);
           haveBeenCalled.should.equal(true);
         });
       });
     });
+    
+    describe('#pageStart', function() 
+    {
+      it('should send correct event for pageStart to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('view');
+          params.event_category.should.equal('content');
+          params.content_type.should.equal('page');
+          params.page_id.should.equal("90");
+          haveBeenCalled = true;
+        }, function() {
+          Sample.pageStart("90");
+          haveBeenCalled.should.equal(true);
+        });
+      });
+      
+      it('should set page_id in storage', function ()         
+      {
+        injectTrack(function(url, params, callback) {
+        }, function() {
+          Sample.pageStart("95");
+          getPageId().should.equal("95");
+          present_page_id.should.equal("95");
+          getItemInStorage('page_id', 'sessionStorage').should.equal("95");
+        });
+      });
+      
+    });
+    
+    
+    describe('#pageEnd', function() 
+    {
+      it('should send correct event for pageEnd to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('view-end');
+          params.event_category.should.equal('content');
+          params.content_type.should.equal('page');
+          params.page_id.should.equal("96");
+          haveBeenCalled = true;
+        }, function() {
+          setPageId("96");
+          Sample.pageEnd();
+          haveBeenCalled.should.equal(true);
+        });
+      });
+      
+      it('should NOT send an event if there is not page_id in the storage', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          haveBeenCalled = true;
+        }, function() {
+          clearPageId();
+          Sample.pageEnd();
+          haveBeenCalled.should.equal(false);
+        });
+      });
+      
+      it('should reset page_id in storage', function ()         
+      {
+        injectTrack(function(url, params, callback) {
+        }, function() {
+          setPageId("98");
+          Sample.pageEnd();
+          should.equal( getPageId(), null );
+          should.equal( present_page_id, null );
+          should.equal(getItemInStorage('page_id', 'sessionStorage'), null);
+        });
+      });
+    });
+    
+           
            
     describe('#purchase', function ()
     {
