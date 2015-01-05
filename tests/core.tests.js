@@ -100,9 +100,17 @@ define(function(require)
         Sample.setEmail("email");
         email.should.equal('email');
       });
-    });   
-    
-    describe('#setPlatform', function () 
+    });
+
+    describe('#getPlatform', function ()
+    {
+      it('should return a string', function ()
+      {
+        Sample.getEndpoint().should.be.a('string');
+      });
+    });
+
+    describe('#setPlatform', function ()
     {
       it('should change internal platform value', function () 
       {
@@ -121,10 +129,28 @@ define(function(require)
         debug.should.equal(false);
       });
     });
-    
-    describe('#[start|End]Group', function () 
+
+    describe('#setInstallToken', function()
     {
-      it('should change set value in connector', function () 
+      it('should change internal installToken value', function ()
+      {
+         Sample.setInstallToken("2C56-9815-5C7C-945E-881F-B8FA");
+         installToken.should.equal("2C56-9815-5C7C-945E-881F-B8FA");
+      });
+    });
+
+    describe('#setSessionToken', function()
+    {
+      it('should change internal sessionToken value', function ()
+      {
+         Sample.setSessionToken("2C56-9815-5C7C-945E-881F-B8FA");
+         sessionToken.should.equal("2C56-9815-5C7C-945E-881F-B8FA");
+      });
+    });
+
+    describe('#[start|End]Group', function ()
+    {
+      it('should change set value in connector', function ()
       {
         Sample.endGroup();
         connector.isGroup().should.equal(false);
@@ -332,6 +358,24 @@ define(function(require)
           haveBeenCalled.should.equal(true);
         });
       });      
+    });
+    
+    describe('#openPage', function () 
+    {
+      it('should send correct event for a apge id to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('open_page');
+          params.event_category.should.equal('content');
+          params.page_id.should.equal(90);
+          haveBeenCalled = true;
+        }, function() {
+          Sample.openPage(90);
+          haveBeenCalled.should.equal(true);
+        });
+      });
     });
            
     describe('#purchase', function ()
