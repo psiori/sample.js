@@ -764,12 +764,12 @@ var Sample =
   
   /** sets the installToken
     * Only use this method when you really need to overwrite the installToken.
-    * E.g when you create a hybrid mobile version.
+    * E.g when you create a hybrid mobile version or switch hosts during one session.
     * The preferred way is to let PSIORI create an installToken for each Device.
     */
   setInstallToken: function(newInstallToken)
   {
-    installToken = newInstallToken;
+    setItemInStorage('SampleToken', (installToken = newInstallToken), 'localStorage');
   },
 
   /** returns the present install token */
@@ -780,12 +780,12 @@ var Sample =
 
   /** sets the sessionToken
     * Only use this method when you really need to overwrite the sessionToken.
-    * E.g when you create a hybrid mobile version.
+    * E.g when you create a hybrid mobile version or switch hosts during one session.
     * The preferred way is to let PSIORI create an sessionToken for each session.
     */
   setSessionToken: function(newSessionToken)
   {
-    sessionToken = newSessionToken;
+    setItemInStorage('SampleToken', (sessionToken = newSessionToken), 'sessionStorage');
   },
   
   /** returns the present session token */
