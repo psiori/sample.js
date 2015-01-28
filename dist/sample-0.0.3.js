@@ -762,7 +762,6 @@ var Sample =
     host = hostname;
   },
   
-
   /** sets the installToken
     * Only use this method when you really need to overwrite the installToken.
     * E.g when you create a hybrid mobile version.
@@ -773,6 +772,12 @@ var Sample =
     installToken = newInstallToken;
   },
 
+  /** returns the present install token */
+  installToken: function()
+  {
+    return installToken;
+  },
+
   /** sets the sessionToken
     * Only use this method when you really need to overwrite the sessionToken.
     * E.g when you create a hybrid mobile version.
@@ -781,6 +786,12 @@ var Sample =
   setSessionToken: function(newSessionToken)
   {
     sessionToken = newSessionToken;
+  },
+  
+  /** returns the present session token */
+  sessionToken: function()
+  {
+    return sessionToken;
   },
 
   // /////////////////////////////////////////////////////////////////////////
