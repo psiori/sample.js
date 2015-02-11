@@ -858,13 +858,14 @@ var Sample =
     * The params are optional.
     */
   sessionStart: function(newAppToken, newUserId, params)
-  {
+  {    
+    appToken = newAppToken || appToken;
+    userId = newUserId || userId;
+
     this.pageEnd({
       automatic: true
     }); // close a page that has been opened earlier. 
-    
-    appToken = newAppToken || appToken;
-    userId = newUserId || userId;
+
     this.track('session_start', 'session', params);
   },
   
