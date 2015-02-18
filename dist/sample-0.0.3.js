@@ -539,8 +539,9 @@ var mergeParams = function(userParams, eventName, eventCategory)
   }
 
   
-  if (eventName === "session_start" ||
+  if (eventName === "session_start"  ||
       eventName === "session_update" ||
+      eventName === "session_resume" ||
       (eventCategory && eventCategory === "account")) 
   {
     add("email",         userParams.email     || email);
@@ -556,6 +557,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
     add("country_code",  userParams.country_code  || country_code);
     add("facebook_id",   userParams.facebook_id   || facebook_id);
     
+    add("target_group",  userParams.target_group);
     
     if (browserMode)
     {
@@ -939,6 +941,11 @@ var Sample =
   {
     userId = newUserId || userId;
     this.track('sign_in', 'account', params);
+  },
+  
+  profileUpdate: function(params)
+  {
+    this.track('update', 'account', params);
   },
   
   

@@ -226,12 +226,14 @@ define(function(require)
           params.ad_referer.should.equal('my_referer');
           params.ad_campaign.should.equal('my_campaign');
           params.ad_placement.should.equal('my_placement');
+          params.target_group.should.equal('my_target_group');
           haveBeenCalled = true;
         }, function() {
           Sample.sessionStart('myToken', 'my_user_id',
                               {ad_referer: 'my_referer',
                               ad_campaign: 'my_campaign',
-                              ad_placement: 'my_placement'});
+                              ad_placement: 'my_placement',
+                              target_group: 'my_target_group'});
           haveBeenCalled.should.equal(true);
         });
       });
@@ -249,11 +251,13 @@ define(function(require)
           params.ad_referer.should.equal('my_referer');
           params.ad_campaign.should.equal('my_campaign');
           params.ad_placement.should.equal('my_placement');
+          params.target_group.should.equal('my_target_group');
           haveBeenCalled = true;
         }, function() {
                     Sample.sessionUpdate({ad_referer: 'my_referer',
                                          ad_campaign: 'my_campaign',
-                                         ad_placement: 'my_placement'});
+                                         ad_placement: 'my_placement',
+                                         target_group: 'my_target_group'});
           haveBeenCalled.should.equal(true);
         });
       });

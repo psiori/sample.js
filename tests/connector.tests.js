@@ -5,6 +5,8 @@ define(function(require) {
 
   describe('Connector', function() {
     
+    this.timeout(5000);
+    
     describe('#length()', function () {
         it('should return zero on startup', function () {
             connector.length().should.equal(0);

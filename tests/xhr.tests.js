@@ -7,6 +7,8 @@ define(function(require) {
 
   describe('XHR', function() {
     
+    this.timeout(5000);
+    
     describe('#send()', function() {
       
       it('on receiving the event, psiori should answer with status code CREATED 201', function(done) {
