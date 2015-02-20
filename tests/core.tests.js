@@ -364,6 +364,68 @@ define(function(require)
       });      
     });
     
+    describe('#registration', function () 
+    {
+      it('should send correct event for a page id to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('registration');
+          params.event_category.should.equal('account');
+        
+          params.user_id.should.equal('aUserId');
+          params.target_group.should.equal('my_group');
+        
+          haveBeenCalled = true;
+        }, function() {
+          Sample.registration('aUserId',{target_group: 'my_group'});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
+    
+    describe('#signIn', function () 
+    {
+      it('should send correct event for a page id to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('sign_in');
+          params.event_category.should.equal('account');
+        
+          params.user_id.should.equal('aUserId');
+          params.target_group.should.equal('my_group');
+        
+          haveBeenCalled = true;
+        }, function() {
+          Sample.signIn('aUserId',{target_group: 'my_group'});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
+    
+    describe('#profileUpdate', function () 
+    {
+      it('should send correct event for a page id to connector', function ()         
+      {
+        var haveBeenCalled = false;
+          
+        injectTrack(function(url, params, callback) {
+          params.event_name.should.equal('update');
+          params.event_category.should.equal('account');
+        
+          params.target_group.should.equal('my_group');
+        
+          haveBeenCalled = true;
+        }, function() {
+          Sample.profileUpdate({target_group: 'my_group'});
+          haveBeenCalled.should.equal(true);
+        });
+      });
+    });
+    
     describe('#pageView', function () 
     {
       it('should send correct event for a page id to connector', function ()         
