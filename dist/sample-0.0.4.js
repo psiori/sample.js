@@ -1,3 +1,379 @@
+/*!
+ * Sample.js - Sends tracking events to 5d's analytics service. v0.0.4
+ * http://www.5dlab.com
+ *
+ * Copyright (c) 2014-2015, Sascha Lange, João Alves, Daniel Band, Artur Susdorf
+ * Licensed under the MIT License.
+ *
+ */
+
+
+
+(function (window, undefined) {//
+// Contains helper functions that will be hidden in the library's closure.
+//
+
+var isArray = function(arg)
+{
+  if (typeof Array.isArray !== 'undefined') 
+  {
+    return Array.isArray(arg);
+  }
+  else
+  {
+    return Object.prototype.toString.call(arg) === '[object Array]';
+  } 
+};
+
+var encodePair = function(key, value, prefix)
+{
+  return prefix + "[" + key + "]=" + encodeURIComponent(value);
+};
+
+var encodeHash = function(hash, name)
+{
+  var components = [];
+  
+  for (var key in hash) 
+  {
+    if (hash.hasOwnProperty(key)) 
+    {
+      components[components.length] = encodePair(key, hash[key], name);
+    }
+  }
+  return components;
+};
+
+var encodeArray = function(array, name)
+{
+  var components = [];
+  
+  for (var i=0; i < array.length; i++)
+  {
+    components[components.length] = encodeHash(array[i], name + "[" + i + "]").join("&");
+  }
+  return components;
+};
+
+var isOnline = function()
+{
+  return navigator.userAgent.match(/PhantomJS/) || navigator.onLine;
+};
+
+
+var XHRPost = (function() 
+{
+  var that = {
+    
+    send: function(url, data, onSuccess, onFailure) 
+    {
+      var string = JSON.stringify(data);
+      var self = this;
+      
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("load", function() 
+      {
+         if (onSuccess) 
+         {
+           var request = {
+             status: xhr.status,
+             headers: xhr.getResponseHeader,
+             url: url
+           };
+           var payload = {};
+           
+           try {
+               payload = JSON.parse(payload.responseText);
+           } catch (e) {}           
+           
+           onSuccess(payload, request);
+         }
+      }, true);
+
+      xhr.addEventListener("error", function() 
+      {
+        if (onFailure) 
+        {
+          var request = {
+            status: xhr.status,
+            headers: xhr.getResponseHeader,
+            url: url
+          };
+          var payload = {};
+          
+          try {
+              payload = JSON.parse(payload.responseText);
+          } catch (e) {}
+          
+          onFailure(payload, request);
+        }
+      });
+
+      xhr.open("POST", url);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+      xhr.send(string);
+    }
+  };
+  
+  return that;
+  
+})();
+
+
+var Pixel = (function() {
+  
+  var counter   = 9900;
+  var wrapperId = 'sample-js-iframes';
+  
+  var insertElement = function(url, callback)
+  {
+    var hook   = document.getElementById(wrapperId);
+    
+    if (!hook)
+    {
+      var body = document.getElementsByTagName("body")[0];
+      hook = document.createElement('div');
+      hook.id = wrapperId;
+      hook.style.display = 'none'; 
+      hook.style.width   = "0";
+      hook.style.height  = "0";
+      hook.style.margin  = "0";
+      body.insertBefore(hook, body.childNodes[0]);
+    } 
+    
+    var element = document.createElement('iframe');
+    var key     = "sample-key-" + counter++;
+    
+    function handler() 
+    { 
+      if (callback)
+      {
+        callback();
+      }      
+      hook.removeChild(element);      
+    }
+    
+    element.onload  = handler;
+    element.onerror = handler;
+    
+    element.src = url;
+    element.id = key;
+    element.style.position = "fixed";
+    element.style.width    = "1px";
+    element.style.height   = "1px";
+    element.style.border   = "0";
+    element.style.margin   = "0";
+    element.style.padding  = "0";
+    element.style.left     = "0";
+    element.style.top      = "0";
+    
+    hook.appendChild(element);
+  };
+  
+  var that = {
+        
+    send: function(url, data, onSuccess, onFailure) 
+    {
+      var str = "";
+      
+      if (isArray(data.p)) 
+      {
+        str = encodeArray(data.p, 'p').join("&");
+      }
+      else if (typeof data.p === "object")
+      {
+        str = encodeHash(data.p, 'p').join("&");
+      }
+      
+      if (url.indexOf("?") === -1) 
+      {
+        url += "?" + str;
+      }
+      else 
+      {
+        url += "&" + str;
+      }
+      
+      insertElement(url, onSuccess);
+    }
+  };
+  
+  return that;
+})();
+
+var createGroup = function() {
+  return {
+    callback: function() {},
+    events: []
+  };
+};
+
+
+var connector = (function() {
+  var queue = [], group = createGroup(),
+      sending = false, running = false, timer = null, grouping = false;
+
+  var that = {
+    
+    useXHR: true,
+    
+    start: function() {
+      if (running) {
+        return ;
+      }
+      running = true;
+      timer = setInterval(function() {
+        that.sendNext();
+      }, 5000);
+    },
+    
+    stop: function() {
+      if (!running) {
+        return ;
+      }
+      running = false;
+      clearInterval(timer);
+    },
+    
+    isRunning: function() {
+      return running === true;
+    },
+    
+    setRequestMethod: function(method)
+    {
+      this.useXHR = method === "xhr";
+    },
+    
+    length: function () {
+      return queue.length;
+    },
+
+    isEmpty: function() {
+      return queue.length === 0;
+    },
+
+    isSending: function() {
+      return sending === true;
+    },
+    
+    startGroup: function() {
+      grouping = true;
+    },
+    
+    endGroup: function() {
+      var tmp = group;
+      grouping = false;
+
+      if (group.events.length === 0) {
+        return ;
+      }
+      
+      group = createGroup();
+      this.add(tmp.url, tmp.events, tmp.callback);
+    },
+    
+    isGroup: function() {
+      return grouping;
+    },
+
+    add: function(url, event, callback) {
+      if (grouping) {
+        if (callback) {
+          var gc = group.callback;
+          group.callback = function() {
+            callback.apply(this, arguments);
+            gc.apply(this, arguments);
+          };
+        }
+        group.events[group.events.length] = event;
+        group.url = url; // last url will win
+      }
+      else {
+        queue[queue.length] = {
+          event: event,
+          callback: callback,
+          url: url
+        };
+        this.sendNext();
+      }
+    },
+
+    clear: function() {
+      queue = [];
+    },
+
+    sendNext: function() {
+      if (!running || !isOnline() || sending || this.isEmpty()) {
+        return ;
+      }
+
+      sending = true;
+      var data = queue[0];
+      var self = this;
+      
+      var url = data.url;
+      var payload = { p: data.event };
+      
+      var success = function(payload, request) 
+      {
+        queue.shift();
+        
+        sending = false;
+        self.sendNext();
+        if (typeof data.callback === "function")
+        {
+          data.callback.call(data.callback, payload, request);
+        }
+      };
+      
+      var error = function(payload, request) 
+      {
+        sending = false;
+        
+        if (request.status === 400 || request.status === 500)
+        {
+          console.error("Bad request or internal server error during call to " + url + 
+                        ". Will not retry. Code " + request.status);
+          queue.shift();
+          self.sendNext();
+          
+          if (typeof data.callback === "function")
+          {
+            data.callback.call(data.callback, payload, request);
+          }
+        }
+        else 
+        {
+          console.debug("Call to " + url + " did not succeed. Will retry. Code " + request.status);
+        
+          setTimeout(function() {
+            self.sendNext();
+          }, 500);
+        }
+      };
+      
+      if (this.useXHR) {
+        XHRPost.send(url, payload, success, error);
+      }
+      else {
+        Pixel.send(url, payload, success, error);
+      }
+    }
+  };
+  
+  document.addEventListener("online", function() {
+    that.sendNext();
+  });
+  document.addEventListener("offline", function() {
+    // presently nothing to do on going offline.
+  });
+  
+  that.start();
+  
+  return that;
+
+})();
 var chooseProtocol = function()
 {
   var protocol = (location.protocol || "https:");
@@ -804,3 +1180,6 @@ var Sample =
 };
 
 Sample.init();	
+
+window.Sample = Sample;
+})(window);
