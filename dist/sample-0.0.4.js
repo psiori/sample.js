@@ -408,7 +408,8 @@ var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     country_code   = null,
     present_page_id= null,
     browserMode    = true,
-    debugMode      = false;
+    debugMode      = false,
+    forceDate      = false;
     
     
 var getItemInStorage = function(key, storage)
@@ -505,6 +506,7 @@ var mergeParams = function(userParams, eventName, eventCategory)
   add("install_token",  installToken);
   add("session_token",  sessionToken);
   add("debug",          debugMode);
+  add("force_date",     forceDate);
   add("timestamp",      Math.round(new Date().getTime() /1000));
   add("user_id",        userId);
 
@@ -743,6 +745,13 @@ var Sample =
   setDebug: function(flag) 
   {
     debugMode = flag;
+  },
+  
+  /** Forces Psiori to use the client date although it's unreliable
+    */
+  setForceDate: function(flag) 
+  {
+    forceDate = flag;
   },
   
   /** sets the browser mode

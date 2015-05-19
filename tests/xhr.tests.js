@@ -1,7 +1,7 @@
 define(function(require) {
     
   var endpoint   = "http://events.psiori.com/sample/v01/event";
-  var endpointNE = "http://not-existent.a.com/sample/v01/event";
+  var endpointNE = "http://not-existent.5dlab.com/sample/v01/event";
   var endpointNF = "http://events.psiori.com/no-sample/v01/event";
   var app_token  = "unit_tests"; 
 
