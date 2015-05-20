@@ -1,0 +1,216 @@
+<html>
+  <head>
+    <script src="../../dist/sample-0.0.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      window.onload = function() {
+        
+        var example_settings = {
+          start_date: new Date(2014,11,1),
+          end_date: new Date(2015,4,20),
+          growth_rate: 0.08,
+          churn_prob: 0.05,
+          session_length: 20,
+          visit_prob1: 0.6,
+          visit_prob2: 0.3,
+          send_user_ids: false,
+          num_start_users: 50,
+          debug: false,
+          event_distance: 10,           // seconds
+          ping_prob: 0.5,
+          app_token: ""              //enter AppToken here
+        };
+
+
+
+
+
+        var generateNewUser = function() {
+          var user = {};
+          user.id = generateUUID();
+          user.install_token = generateUUID();
+          user.registered = false;
+          return user;
+        };
+
+        var generateUUID = function() {
+          var d = new Date().getTime();
+          var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (d + Math.random()*16)%16 | 0;
+            d = Math.floor(d/16);
+            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+          });
+          return uuid;
+        };
+
+        var generateUsers = function(count) {
+          var users = [];
+          for(i = 0; i < count; i++)
+          {
+            var new_user = generateNewUser();
+            users.push(new_user)
+          }
+          return users;
+        }
+
+        var page_module_pairs = [
+          {
+            page_id: "cbi:///cms/8032",
+            module: "cbi:///cms/8031"
+          },
+          {
+            page_id: "cbi:///cms/8088",
+            module: "cbi:///cms/8031"
+          },
+          {
+            page_id: "cbi:///cms/8128",
+            module: "cbi:///cms/8031"
+          },
+          {
+            page_id: "cbi:///cms/8046",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/8052",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/8065",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/8074",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/8083",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/8092",
+            module: "cbi:///cms/8042"
+          },
+          {
+            page_id: "cbi:///cms/187807",
+            module: "cbi:///cms/187720"
+          },
+          {
+            page_id: "cbi:///cms/187721",
+            module: "cbi:///cms/187720"
+          },
+          {
+            page_id: "cbi:///cms/187816",
+            module: "cbi:///cms/187720"
+          }
+        ]
+
+        var createSampleEvents = function(settings) {
+          settings.start_date = settings.start_date || new Date(2015, 0, 1);
+          settings.end_date = settings.end_date || new Date(2015, 1, 1);
+          settings.growth_rate = settings.growth_rate || 0.1;
+          settings.session_length = settings.session_length || 20;
+          settings.churn_prob = settings.churn_prob || 0.05;
+          settings.visit_prob1 = settings.visit_prob1 || 0.6;
+          settings.visit_prob2 = settings.visit_prob2 || 0.3;
+          settings.send_user_ids = settings.send_user_ids || false;
+          settings.num_start_users = settings.num_start_users || 1000;
+          settings.event_distance = settings.event_distance || 10;
+          settings.ping_prob = settings.ping_prob || 0.5;
+
+          var createSession = function(user, date) {
+            Sample.setSessionToken(generateUUID());
+            Sample.setInstallToken(user.install_token);
+            Sample.setUserId(null);
+
+            Sample.setDebug(settings.debug);
+
+            Sample.setAppToken(settings.app_token);
+            Sample.setForceDate(true);
+            Sample.setTimestamp(date);
+            Sample.sessionStart();
+            if(settings.send_user_ids)
+            {
+              if(user.registered !== true)
+              {
+                Sample.registration();
+                user.registered = true;
+              }
+              Sample.signIn(user.id);
+            }
+
+            var num_events = Math.floor((Math.random() * settings.session_length) + 1);
+            for(i = 0; i < num_events; i++)
+            {
+              var eventDate = new Date(date.getTime() + 1000 * i * settings.event_distance);
+              Sample.setTimestamp(eventDate);
+              if(Math.random() > settings.ping_prob)
+              {
+                Sample.ping()
+              }
+              else
+              {
+                var pair = page_module_pairs[Math.floor((Math.random() * page_module_pairs.length-1) + 1)];
+                var page_id = pair.page_id;
+                var module = pair.module;
+                Sample.pageView(page_id, {module: module})
+              }
+            }
+          };
+
+          var generateEvents = function(user, date) {
+            if(Math.random() <= settings.visit_prob1)
+            {
+              createSession(user, new Date(date.getTime() + Math.random() * 24*3600*1000) );
+              if(Math.random() <= settings.visit_prob2)
+              {
+                createSession(user,  new Date(date.getTime() + Math.random() * 24*3600*1000));
+              }
+            }
+          };
+
+          var churnUsers = function(users, prob) {
+            var users2 = [];
+            users.forEach(function(user) {
+              if(Math.random() > prob)
+              {
+                users2.push(user);
+              }
+            });
+            return users2;
+          };
+
+          var addNewUsers = function(users, growth) {
+            var newUsers = [];
+            var newUsersCount = Math.random() * 2 * growth * users.length;
+            newUsers = generateUsers(newUsersCount);
+            newUsers.forEach(function(newUser) {
+              users.push(newUser);
+            });
+            return users;
+          };
+
+          var USERS = generateUsers(settings.num_start_users);
+          var total_running_days = (settings.end_date - settings.start_date) / 86400000 + 1;
+          for(day = 0; day < total_running_days; day++)
+          {
+            Sample.startGroup();
+            var currentDate = new Date(settings.start_date.getTime() + 86400000 * day + 3600*1000);  // presently correct for UTC +0001
+            USERS.forEach(function(user) {
+              generateEvents(user, currentDate);
+            });
+            Sample.endGroup();
+
+            USERS = churnUsers(USERS, settings.churn_prob);
+            USERS = addNewUsers(USERS, settings.growth_rate);
+            console.log("Done for " + currentDate, USERS.length);
+          }
+        };
+
+        createSampleEvents(example_settings);
+      };
+    </script>
+    
+  </body>
+</html>
