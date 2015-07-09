@@ -33,12 +33,12 @@ define(function(require) {
         
         XHRPost.send(endpoint, data,
                      function(payload, request) {
-                              should.exist(request);
-                              request.status.should.equal(400);
+                              should.exist(undefined); // fail , must end up in error handler!!!
                               done();
                      },
                      function(payload, request) {
-                              should.exist(undefined); // fail
+                              should.exist(request);
+                              request.status.should.equal(400);
                               done();
                      });
       });
