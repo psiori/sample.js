@@ -22,11 +22,40 @@
     
     <script>
       window.onload = function() {
-        Sample.setAppToken("testsapp");
+        Sample.setAppToken("SampleJS");
         Sample.setDebug(true);
         Sample.setModule('development')
-        Sample.customEvent('custom_1');
-        Sample.customEvent('custom_1');        
+        Sample.sessionStart();
+        Sample.sessionUpdate();
+        Sample.autoPing(60);
+        
+        Sample.startGroup();
+        Sample.track('group_event1');
+        Sample.track('group_event2');
+        Sample.endGroup();
+        
+        Sample.contentUsage(1, null, {
+          callback: function(payload, request) {
+            console.debug(payload, request.status, request);
+            alert("Content Usage event: " + request.status);
+          }
+        });
+        Sample.contentUsage([2, 3]);
+        
+        setTimeout(function() {
+          Sample.setRequestMethod('iframe');
+          Sample.sessionUpdate();
+          Sample.ping();
+        
+          Sample.startGroup();
+          Sample.track('group_event3');
+          Sample.track('group_event4');
+          Sample.endGroup();
+        
+          Sample.contentUsage(4);
+          Sample.contentUsage([5, 6]);
+        }, 5000);
+        
       };
     </script>
   </body>
