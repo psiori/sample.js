@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <script src="../../dist/sample-0.0.5.min.js"></script>
+  </head>
+
+  <body>
+    <h1>Custom Events</h1>
+    <p>
+      This html file demonstrates the usage of custom events that can be sent, to the eventcash.
+      For this we send two custom_events with different names.
+    </p>
+    
+    <script>
+      window.onload = function() {
+        Sample.setAppToken("SampleJS");
+        Sample.setDebug(true);
+        Sample.customEvent("custom_1");
+        Sample.customEvent("custom_2",{acc_value:0.4});
+      };
+    </script>
+  </body>
+</html>

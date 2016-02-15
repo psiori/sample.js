@@ -395,7 +395,7 @@ var chooseProtocol = function()
   return protocol;
 };
 
-var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
+var endpoint       = chooseProtocol() + "//events1.psiori.com/sample/v01/event",
     sdk            = "Sample.JS",
     sdk_version    = "0.0.5",
     installToken   = null,
@@ -421,7 +421,8 @@ var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     timestamp      = null, 
     browserMode    = true,
     debugMode      = false,
-    forceDate      = false;
+    forceDate      = false,
+    acc_value      = 1;
     
     
 var getItemInStorage = function(key, storage)
@@ -582,8 +583,10 @@ var mergeParams = function(userParams, eventName, eventCategory)
     // send host only, if explicitly set or presently in browser mode
     add("host", host || (browserMode ? window.location.host : null));
   }
-
-  
+  if (eventCategory === "custom")
+  {
+    add("acc_value", userParams.acc_value || acc_value);
+  }
   return params;
 };
 
@@ -1216,7 +1219,25 @@ var Sample =
       }
       return memo;
     };
-  })()
+  })(),
+
+  
+  // /////////////////////////////////////////////////////////////////////////
+  //
+  //   Custom events
+  //
+  // /////////////////////////////////////////////////////////////////////////
+  
+  /** This function can be used to send custom Events 
+  * an eventName has to be included. If the event is tied to some sort of
+  * numeric value it can be passed with the key acc_value
+  */
+  customEvent: function(eventName,params)
+  {
+    var userParams = params || {};
+    this.track(eventName, 'custom', userParams);
+  }
+
 };
 
 Sample.init();	
