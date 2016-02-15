@@ -1,7 +1,7 @@
 {
   "name": "Sample.js",
   "barename": "samplejs",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "homepage": "http://www.5dlab.com",
   "description": "Sends tracking events to 5d's analytics service.",
@@ -28,7 +28,7 @@
     "type": "git",
     "url": "https://github.com/wackadoo/analytics-sample.js.git"
   },
-  "author": "Sascha Lange, João Alves, Daniel Band, Artur Susdorf",
+  "author": "Sascha Lange, João Alves, Daniel Band, Artur Susdorf, Jonas Kindler",
   "license": "MIT",
   "readmeFilename": "README.md",
   "main": "lib/sample.js",
