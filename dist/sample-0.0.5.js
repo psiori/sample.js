@@ -395,7 +395,7 @@ var chooseProtocol = function()
   return protocol;
 };
 
-var endpoint       = chooseProtocol() + "//events1.psiori.com/sample/v01/event",
+var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     sdk            = "Sample.JS",
     sdk_version    = "0.0.5",
     installToken   = null,
