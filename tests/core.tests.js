@@ -637,6 +637,16 @@ define(function(require)
         randomToken(12)[4].should.equal('-');
       });
     });
+
+    describe('#getQueryVars', function ()  {
+      it('should extract relevant fields from url', function () 
+      {
+        var params = getQueryVars("http://www.test.com?hans=glueck&refid=ref&sub_id=sub");
+        
+        params.refid.should.equal('ref');
+        params.sub_id.should.equal('sub');
+      });
+    });
     
     describe('#mergeParams', function () 
     {

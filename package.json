@@ -1,7 +1,7 @@
 {
   "name": "Sample.js",
   "barename": "samplejs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "homepage": "http://www.5dlab.com",
   "description": "Sends tracking events to 5d's analytics service.",
