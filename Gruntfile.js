@@ -137,7 +137,7 @@ module.exports = function(grunt) {
         src: ['tests/**/*.html'],
         options : {
           threshold : 50,
-          globalThreshold : 90,
+          globalThreshold : 85,
           page: { 
             // this is the same trick as above. since unfortunately
             // grunt-blanket-mocha didn't pull the solution to set

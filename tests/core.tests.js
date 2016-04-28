@@ -136,6 +136,7 @@ define(function(require)
       {
          Sample.setInstallToken("2C56-9815-5C7C-945E-881F-B8FA");
          installToken.should.equal("2C56-9815-5C7C-945E-881F-B8FA");
+         Sample.installToken().should.equal("2C56-9815-5C7C-945E-881F-B8FA");
       });
     });
 
@@ -145,6 +146,7 @@ define(function(require)
       {
          Sample.setSessionToken("2C56-9815-5C7C-945E-881F-B8FA");
          sessionToken.should.equal("2C56-9815-5C7C-945E-881F-B8FA");
+         Sample.sessionToken().should.equal("2C56-9815-5C7C-945E-881F-B8FA");
       });
     });
     
