@@ -425,7 +425,7 @@ var endpoint       = chooseProtocol() + "//events.psiori.com/sample/v01/event",
     autoExtractRef = true,
     acc_value      = null,
     has_cookies    = false,
-    c_domain       = null;
+    c_domain       = typeof window.Sample === "undefined" ? null : (window.Sample.DOMAIN || null);
     
     
 var getItemInStorage = function(key, storage)
@@ -689,7 +689,6 @@ var Sample =
   init: function(params) 
   {
     has_cookies = checkCookie();
-    c_domain = typeof window.Sample === "undefined" ? null : (Sample.DOMAIN || null);
     
     if (has_cookies) {
       if (!(installToken = getTokenFromCookie())) {
